@@ -1,2 +1,17 @@
-node_modules
-dist
+# dependencies
+website/node_modules/
+
+# build output
+website/dist/
+website/build/
+
+# blender temp files
+*.blend1
+*.blend2
+
+# OS junk
+.DS_Store
+Thumbs.db
+
+# Own files
+assets

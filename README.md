@@ -2,11 +2,33 @@
 
 ## Running the project
 ### 1. Open terminal
-### 2. Navigate to the website folder
-#### example: cd "C:/Projects/Kres-3.0/website"
+### 2. Navigate to the website folder. Example: 
+```bash
+cd "C:/Projects/Kres-3.0/website"
+```
 ### 3. Run:
-#### npm install
+```bash
+npm install
+```
 ### 4. Run:
-#### npm run dev
-### 5. Navigate to Local
-#### should be something like: Local:   http://localhost:5173/
+```bash
+npm run dev
+```
+### 5. The output should be something like:
+```bash
+ npm run dev
+
+> fps_basic@1.0.0 dev
+> vite
+
+
+  VITE v6.1.0  ready in 108 ms
+
+  ➜  Local:   http://localhost:-your-numbers-/
+  ➜  Network: use --host to expose
+  ➜  press h + enter to show help
+```
+### 6. Open Local in browser
+```bash
+http://localhost:-your-numbers-/
+```

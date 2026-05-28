@@ -6,7 +6,7 @@ import { createRenderer } from "./renderer";
 // Animations
 import { createCamera, playGunAnimation } from "../components/camera";
 
-const GRAVITY = 30;
+const GRAVITY = 20;
 const STEPS_PER_FRAME = 5;
 
 // Animation Variables
@@ -109,7 +109,6 @@ function createPhysics(scene) {
   */
   //   -----END----SHOOTER WITH AUDIO AND GUN LOAD-----
 
-
   // Check for infinite falling
   let infiniteFalling = false;
 
@@ -117,21 +116,27 @@ function createPhysics(scene) {
     infiniteFalling = value;
   }
 
+  // Check if running
+  let isRunning = false;
+
+  function setIsRunning(value) {
+    isRunning = value;
+  }
+
   function updatePlayer(deltaTime, worldOctree, camera) {
     if (!playerCollider || !playerCollider.end) return;
 
-    let damping = Math.exp(-4 * deltaTime) - 1;
+    // PROBABLY NOT NEEDED ANYMORE
+    let dampingStrength = isRunning ? 0 : 32;
+
+    let damping = Math.exp(-dampingStrength * deltaTime) - 1;
 
     if (!playerOnFloor) {
       playerVelocity.y -= GRAVITY * deltaTime;
-      damping *= 0.1;
+      damping *= 0.01;
     }
 
-    // Reset player if falling too fast
-    if ((playerVelocity.y < -20) && !infiniteFalling) {
-      resetPlayer();
-    }
-
+    // Player movement damping
     playerVelocity.addScaledVector(playerVelocity, damping);
     playerCollider.translate(playerVelocity.clone().multiplyScalar(deltaTime));
 
@@ -144,11 +149,16 @@ function createPhysics(scene) {
         result.normal,
         -result.normal.dot(playerVelocity)
       );
-      playerCollider.translate(result.normal.multiplyScalar(result.depth));
+      playerCollider.translate(result.normal.multiplyScalar(result.depth * 0.9));
     }
 
     if (playerCollider && playerCollider.end) {
       camera.position.copy(playerCollider.end);
+    }
+
+    // Reset player if falling too fast
+    if ((playerVelocity.y < -20) && !infiniteFalling) {
+      resetPlayer();
     }
   }
 
@@ -160,6 +170,7 @@ function createPhysics(scene) {
     worldOctree,
     setInfiniteFalling,
     resetPlayer,
+    setIsRunning
   };
 }
 

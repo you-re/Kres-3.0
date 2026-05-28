@@ -2,11 +2,13 @@ import { HemisphereLight, DirectionalLight } from "three";
 
 function createLights() {
   // Fill Light
-  const fillLight1 = new HemisphereLight(0x8dc1de, 0x00668d, 1.5);
+  const col1 = 0x000000;
+  const col2 = 0xffaaaa;
+  const fillLight1 = new HemisphereLight(col1, col2, 1.5);
   fillLight1.position.set(2, 1, 1);
 
   // Sun Light
-  const directionalLight = new DirectionalLight(0xffffff, 2.5);
+  const directionalLight = new DirectionalLight(col2, 5);
   directionalLight.position.set(-5, 25, -1);
   directionalLight.castShadow = true;
   directionalLight.shadow.camera.near = 0.01;

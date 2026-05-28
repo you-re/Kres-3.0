@@ -1,12 +1,19 @@
 import * as THREE from "three";
+import { vec3 } from "three/tsl";
 
-function setupControls(camera, playerVelocity, playerDirection, resetPlayer) {
+function setupControls(camera, playerVelocity, playerDirection, resetPlayer, setIsRunning) {
   const keyStates = {};
+
+  const acceleration = 20;
+  const maxSpeed = 10;
+  const glideSpeed = 0.01;
 
   let run = false;
   let jump = false;
   let jumpTimer = 0;
   const jumpDelay = 20;
+
+  let speed = 0;
 
   document.addEventListener(
     "keydown",
@@ -36,7 +43,7 @@ function setupControls(camera, playerVelocity, playerDirection, resetPlayer) {
     }
   });
 
-  // Jump event listener
+  // Mouse controls event listener
   document.body.addEventListener("mousedown", (e) => {
     if (e.button === 0) { // 0 = left mouse button
       run = true;
@@ -47,7 +54,7 @@ function setupControls(camera, playerVelocity, playerDirection, resetPlayer) {
     }
   });
 
-  // Jump event listener
+  // Run event listener
   document.body.addEventListener("mouseup", (e) => {
     if (e.button === 0) { // 0 = left mouse button
       run = false;
@@ -70,28 +77,33 @@ function setupControls(camera, playerVelocity, playerDirection, resetPlayer) {
 
       side.setFromMatrixColumn(camera.matrixWorld, 0).normalize();
     }
-    
-    // if (keyStates["KeyW"])
-      // playerVelocity.add(forward.clone().multiplyScalar(speedDelta));
-    // if (keyStates["KeyS"])
-      // playerVelocity.add(forward.clone().multiplyScalar(-speedDelta));
-    // if (keyStates["KeyA"])
-      // playerVelocity.add(side.clone().multiplyScalar(-speedDelta));
-    // if (keyStates["KeyD"])
-      // playerVelocity.add(side.clone().multiplyScalar(speedDelta));
-
-    // Run forward
-    if (run) {
-      playerVelocity.add(forward.clone().multiplyScalar(speedDelta));
-    }
 
     // Jump
     if (jump && playerOnFloor && jumpTimer > 0) {
-      playerVelocity.y = 15;
+      playerVelocity.y = 10;
       jump = false;
+      playerOnFloor = false;
     }
 
     jumpTimer -= 1;
+
+    // Run
+    if (run) {
+      speed += deltaTime * acceleration;
+      speed = Math.min(speed, maxSpeed);
+      
+      let newVelocity = forward.clone().multiplyScalar(speed);
+      newVelocity.y = playerVelocity.y;
+      playerVelocity.copy(newVelocity);
+    }
+    else if (!run && playerOnFloor)
+      {
+      speed = 0;
+    }
+
+    setIsRunning(run);
+
+    console.log(playerOnFloor);
   }
 
   return applyControls;

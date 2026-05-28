@@ -3,7 +3,7 @@ import { HemisphereLight, DirectionalLight } from "three";
 function createLights() {
   // Fill Light
   const col1 = 0x000000;
-  const col2 = 0xffaaaa;
+  const col2 = 0xffffff;
   const fillLight1 = new HemisphereLight(col1, col2, 1.5);
   fillLight1.position.set(2, 1, 1);
 

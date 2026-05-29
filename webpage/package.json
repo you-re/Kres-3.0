@@ -6,10 +6,10 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "vite build",
     "dev": "vite",
-    "preview": "vite preview"
+    "preview": "vite preview --port 8080"
   },
   "keywords": [],
-  "author": "Luka Lavrenci, Jure Sulic",
+  "author": "Luka Lavrenci, Jure Sulič",
   "license": "ISC",
   "description": "",
   "dependencies": {

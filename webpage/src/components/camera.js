@@ -21,6 +21,8 @@ function createCamera(scene) {
   gunHolder.position.set(0, -0.2, -0.5);
   camera.add(gunHolder);
 
+  // LOAD MODEL FOR FPV
+  /*
   const loader = new GLTFLoader();
   loader.load("/models/FpsRig.glb", (gltf) => {
     const gun = gltf.scene;
@@ -44,6 +46,7 @@ function createCamera(scene) {
 
     scene.add(player);
   });
+  */
 
   return { camera, player, gunHolder };
 }

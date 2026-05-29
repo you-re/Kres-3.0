@@ -11,6 +11,10 @@ const STEPS_PER_FRAME = 5;
 
 const dampingStrength = 32; 
 
+// Damage system
+let recievingDamage = false;
+let damageGiven = 0;
+
 // Animation Variables
 const renderer = createRenderer();
 const clock = new THREE.Clock();
@@ -23,7 +27,7 @@ const camera = new THREE.PerspectiveCamera(
 );
 camera.position.z = 5;
 
-function createPhysics(scene) {
+function createPhysics( scene, animation, giveDamage ) {
   const worldOctree = new Octree();
 
   const playerCollider = new Capsule(
@@ -36,16 +40,6 @@ function createPhysics(scene) {
   const playerVelocity = new THREE.Vector3();
   const playerDirection = new THREE.Vector3();
   let playerOnFloor = false;
-
-  // Function to reset the player
-  function resetPlayer(x = 0, y = 0.35, z = 0) {
-    playerVelocity.set(0, 0, 0);
-
-    playerCollider.start.set(x, y, z);
-    playerCollider.end.set(x, y + 0.65, z); // keep capsule height
-
-    camera.position.copy(playerCollider.end);
-  }
 
   // ⚙️💡SHOOTER CONTROLS & SOUNDS
   /*
@@ -118,6 +112,16 @@ function createPhysics(scene) {
     infiniteFalling = value;
   }
 
+  // Function to reset the player
+  function resetPlayer(x = 0, y = 0.35, z = 0) {
+    playerVelocity.set(0, 0, 0);
+
+    playerCollider.start.set(x, y, z);
+    playerCollider.end.set(x, y + 0.65, z); // keep capsule height
+
+    camera.position.copy(playerCollider.end);
+  }
+
   function updatePlayer(deltaTime, worldOctree, camera) {
     if (!playerCollider || !playerCollider.end) return;
 
@@ -146,12 +150,29 @@ function createPhysics(scene) {
 
     if (playerCollider && playerCollider.end) {
       camera.position.copy(playerCollider.end);
-    }
+    };
 
-    // Reset player if falling too fast
-    if ((playerVelocity.y < -20) && !infiniteFalling) {
-      resetPlayer();
-    }
+    if ( !infiniteFalling ) {
+
+      if (playerVelocity.y < -10) {
+        recievingDamage = true;
+        damageGiven = Math.min(0, playerVelocity.y);
+        console.log("Velocity: " + playerVelocity.y)
+      }
+
+      if ( playerOnFloor && recievingDamage ) {
+          giveDamage(Math.abs(damageGiven));
+          console.log("Damage given: " + damageGiven);
+          damageGiven = 0;
+          recievingDamage = false;
+      }
+
+      // Reset player if falling too fast
+      if ((playerVelocity.y < -20)) {
+        giveDamage(1000);
+        resetPlayer();
+      }
+    };
   }
 
   return {

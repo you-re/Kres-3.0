@@ -11,6 +11,8 @@ import { loadWorld } from "./components/world";
 import { createRenderer } from "./systems/renderer";
 import { createStats } from "./systems/stats";
 import { Resizer } from "./systems/resizer";
+// Health System
+import { createHealthSystem } from "./systems/health"
 
 // Physics & Controls
 import { createPhysics, STEPS_PER_FRAME } from "./systems/physics";
@@ -18,6 +20,7 @@ import { setupControls } from "./systems/controls";
 
 // UI & Debug
 import { createDebugGUI } from "./components/debug";
+
 
 const clock = new THREE.Clock();
 
@@ -43,6 +46,12 @@ container.appendChild(renderer.domElement);
 const stats = createStats();
 container.appendChild(stats.domElement);
 
+// Initialize Health
+const {
+  takeDamage,
+  health
+} = createHealthSystem ();
+
 // Initialize Physics & Controls
 const {
   playerCollider,
@@ -52,7 +61,7 @@ const {
   worldOctree,
   setInfiniteFalling,
   resetPlayer
-} = createPhysics(scene, animations); // Pass animations to createPhysics
+} = createPhysics( scene, animations, takeDamage ); // Pass animations to createPhysics
 
 // Create debug UI
 createDebugGUI({

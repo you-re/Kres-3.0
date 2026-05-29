@@ -27,7 +27,7 @@ function createLights() {
     sunColor = value;
 
     directionalLight.color.set(sunColor);
-    fillLight1.color.set(value)
+    fillLight1.color.set(sunColor)
   }
 
   function setHorizonColor(value) {

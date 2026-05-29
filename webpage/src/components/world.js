@@ -38,6 +38,7 @@ function loadWorld(scene, worldOctree, setInfiniteFalling) {
     });
   });
 
+  // WORLD
   loader.load("collision-world.glb", (gltf) => {
     scene.add(gltf.scene);
     worldOctree.fromGraphNode(gltf.scene);
@@ -50,6 +51,7 @@ function loadWorld(scene, worldOctree, setInfiniteFalling) {
       }
     });
   });
+  
 }
 
 export { loadWorld };

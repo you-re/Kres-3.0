@@ -45,10 +45,6 @@ export function createDebugGUI({ onInfiniteFallingChange, setFogColor, setFogDen
       setHorizonColor(value);
     }
   });
-
-  gui.add({RESET: "R resets"}, "RESET").disable();
-  gui.add({MOVE: "M stops movement"}, "MOVE").disable();
-  gui.add({RUN: "Left click → JUMP + GLIDE"}, "RUN").disable();
-  
+    
   return gui;
 }

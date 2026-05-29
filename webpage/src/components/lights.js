@@ -1,14 +1,15 @@
 import { HemisphereLight, DirectionalLight } from "three";
 
 function createLights() {
+  let sunColor = 0xffffff;
+  let horizonColor = 0x000000;
+
   // Fill Light
-  const col1 = 0x000000;
-  const col2 = 0xffffff;
-  const fillLight1 = new HemisphereLight(col1, col2, 1.5);
-  fillLight1.position.set(2, 1, 1);
+  const fillLight1 = new HemisphereLight(horizonColor, sunColor, 1.5);
+  fillLight1.position.set(0, 0, 0);
 
   // Sun Light
-  const directionalLight = new DirectionalLight(col2, 5);
+  const directionalLight = new DirectionalLight(sunColor, 5);
   directionalLight.position.set(-5, 25, -1);
   directionalLight.castShadow = true;
   directionalLight.shadow.camera.near = 0.01;
@@ -22,7 +23,25 @@ function createLights() {
   directionalLight.shadow.radius = 4;
   directionalLight.shadow.bias = -0.00006;
 
-  return { fillLight1, directionalLight };
+  function setSunColor(value) {
+    sunColor = value;
+
+    directionalLight.color.set(sunColor);
+    fillLight1.color.set(value)
+  }
+
+  function setHorizonColor(value) {
+    horizonColor = value;
+    
+    fillLight1.groundColor.set(horizonColor);
+  }
+
+  return {
+    fillLight1,
+    directionalLight,
+    setSunColor,
+    setHorizonColor
+  };
 }
 
 export { createLights };

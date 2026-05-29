@@ -19,6 +19,8 @@ function setupControls(camera, playerVelocity, playerDirection, resetPlayer) {
 
   let speed = 0;
 
+  let disabledMovement = false;
+
   document.addEventListener(
     "keydown",
     (event) => {
@@ -28,6 +30,18 @@ function setupControls(camera, playerVelocity, playerDirection, resetPlayer) {
       if (event.code === "KeyR") {
         resetPlayer();
       }
+
+      // Disable or enable player movement
+      if (event.code === "KeyM") {
+        disabledMovement = !disabledMovement;
+        if (disabledMovement) {
+          document.exitPointerLock();
+        }
+        else {
+          document.body.requestPointerLock();
+        }
+        console.log("Movement: ");
+      }
     }
   );
 
@@ -36,12 +50,15 @@ function setupControls(camera, playerVelocity, playerDirection, resetPlayer) {
     (event) => (keyStates[event.code] = false)
   );
 
-  document.body.addEventListener("click", () =>
-    document.body.requestPointerLock()
+  document.body.addEventListener("click", () => {
+    if (!disabledMovement) {
+      document.body.requestPointerLock()
+      }
+    }
   );
 
   document.body.addEventListener("mousemove", (event) => {
-    if (document.pointerLockElement === document.body) {
+    if ((document.pointerLockElement === document.body) && !disabledMovement) {
       camera.rotation.y -= event.movementX / 500;
       camera.rotation.x -= event.movementY / 500;
     }
@@ -56,10 +73,12 @@ function setupControls(camera, playerVelocity, playerDirection, resetPlayer) {
       // Delay jump to make movement feel more responsive
       jumpTimer = jumpDelay;
     }
+    /*
     if (e.button === 2) { // 2 = right mouse button
-      // jump = true;
-      // jumpTimer = jumpDelay;
+      jump = true;
+      jumpTimer = jumpDelay;
     }
+    */
   });
 
   // Run event listener
@@ -70,7 +89,6 @@ function setupControls(camera, playerVelocity, playerDirection, resetPlayer) {
   });
 
   function applyControls(deltaTime, playerOnFloor, camera) {
-    // const speedDelta = deltaTime * (playerOnFloor ? 25 : 8);
 
     // Stabilize collision detection over onFloorDelay frames
     if ( playerOnFloor ) {
@@ -98,22 +116,24 @@ function setupControls(camera, playerVelocity, playerDirection, resetPlayer) {
       side.setFromMatrixColumn(camera.matrixWorld, 0).normalize();
     }
 
-    // Jump
-    if (jump && onFloor && jumpTimer > 0) {
-      playerVelocity.y = 10;
-      jump = false;
-      onFloor = false;
-    }
+    if (!disabledMovement) {
+      // Jump
+      if (jump && onFloor && jumpTimer > 0) {
+        playerVelocity.y = 10;
+        jump = false;
+        onFloor = false;
+      }
 
-    // Run
-    if (run && !onFloor) {
-      speed += deltaTime * acceleration;
-      speed = Math.min(speed, maxSpeed);
-      
-      let newVelocity = forward.clone().multiplyScalar(speed);
-      newVelocity.y = playerVelocity.y;
-      playerVelocity.copy(newVelocity);
-    }
+      // Run
+      if (run && !onFloor) {
+        speed += deltaTime * acceleration;
+        speed = Math.min(speed, maxSpeed);
+        
+        let newVelocity = forward.clone().multiplyScalar(speed);
+        newVelocity.y = playerVelocity.y;
+        playerVelocity.copy(newVelocity);
+      }
+    };
 
     if (onFloor)
       {

@@ -5,7 +5,7 @@ import { createScene } from "./components/scene";
 import { createCamera, gunMixer } from "./components/camera";
 import { createLights } from "./components/lights";
 import { loadWorld } from "./components/world";
-import { addBgMusic } from "./components/music";
+// import { addBgMusic } from "./components/music";
 
 // Systems
 import { createRenderer } from "./systems/renderer";
@@ -20,9 +20,21 @@ import { setupControls } from "./systems/controls";
 import { createDebugGUI } from "./components/debug";
 
 const clock = new THREE.Clock();
-const scene = createScene();
+
+// SCENE, BACKGROUND, FOG)
+const {
+  scene,
+  setFogColor,
+  setFogDensity
+} = createScene();
+
 const { camera, animations } = createCamera(scene); // Destructure to get the camera instance and animations
-const { fillLight1, directionalLight } = createLights();
+const {
+  fillLight1,
+  directionalLight,
+  setSunColor, 
+  setHorizonColor
+  } = createLights();
 scene.add(fillLight1, directionalLight);
 
 const container = document.getElementById("container");
@@ -42,7 +54,14 @@ const {
   resetPlayer
 } = createPhysics(scene, animations); // Pass animations to createPhysics
 
-createDebugGUI({ onInfiniteFallingChange: setInfiniteFalling });
+// Create debug UI
+createDebugGUI({
+  onInfiniteFallingChange: setInfiniteFalling,
+  setFogColor: setFogColor,
+  setFogDensity: setFogDensity,
+  setSunColor: setSunColor,
+  setHorizonColor: setHorizonColor
+});
 
 const applyControls = setupControls(
   camera, // Pass the correct camera instance
@@ -55,7 +74,7 @@ const applyControls = setupControls(
 loadWorld(scene, worldOctree);
 
 // Add Background Sound Effects
-addBgMusic();
+// addBgMusic();
 
 // Animation Loop
 

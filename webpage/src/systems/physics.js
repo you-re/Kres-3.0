@@ -9,6 +9,8 @@ import { createCamera, playGunAnimation } from "../components/camera";
 const GRAVITY = 20;
 const STEPS_PER_FRAME = 5;
 
+const dampingStrength = 32; 
+
 // Animation Variables
 const renderer = createRenderer();
 const clock = new THREE.Clock();
@@ -116,18 +118,8 @@ function createPhysics(scene) {
     infiniteFalling = value;
   }
 
-  // Check if running
-  let isRunning = false;
-
-  function setIsRunning(value) {
-    isRunning = value;
-  }
-
   function updatePlayer(deltaTime, worldOctree, camera) {
     if (!playerCollider || !playerCollider.end) return;
-
-    // PROBABLY NOT NEEDED ANYMORE
-    let dampingStrength = isRunning ? 0 : 32;
 
     let damping = Math.exp(-dampingStrength * deltaTime) - 1;
 
@@ -169,8 +161,7 @@ function createPhysics(scene) {
     updatePlayer,
     worldOctree,
     setInfiniteFalling,
-    resetPlayer,
-    setIsRunning
+    resetPlayer
   };
 }
 

@@ -39,8 +39,7 @@ const {
   updatePlayer,
   worldOctree,
   setInfiniteFalling,
-  resetPlayer,
-  setIsRunning
+  resetPlayer
 } = createPhysics(scene, animations); // Pass animations to createPhysics
 
 createDebugGUI({ onInfiniteFallingChange: setInfiniteFalling });
@@ -49,8 +48,7 @@ const applyControls = setupControls(
   camera, // Pass the correct camera instance
   playerVelocity,
   playerDirection,
-  resetPlayer,
-  setIsRunning
+  resetPlayer
 );
 
 // Load World

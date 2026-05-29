@@ -7,7 +7,7 @@ function loadWorld(scene, worldOctree, setInfiniteFalling) {
   // dracoLoader.setDecoderPath('/draco/');
 
   // IMPLEMENT CHUNK LOADING
-  const loader = new GLTFLoader().setPath("/models/");
+  const loader = new GLTFLoader().setPath("./models/");
   // loader.setDRACOLoader(dracoLoader);
 
   // Load ground

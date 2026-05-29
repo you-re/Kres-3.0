@@ -1,7 +1,7 @@
 import * as THREE from "three";
 import { vec3 } from "three/tsl";
 
-function setupControls(camera, playerVelocity, playerDirection, resetPlayer, setIsRunning) {
+function setupControls(camera, playerVelocity, playerDirection, resetPlayer) {
   const keyStates = {};
 
   const acceleration = 20;
@@ -12,6 +12,10 @@ function setupControls(camera, playerVelocity, playerDirection, resetPlayer, set
   let jump = false;
   let jumpTimer = 0;
   const jumpDelay = 20;
+
+  let onFloor = false;
+  let onFloorCounter = 0;
+  const onFloorDelay = 4;
 
   let speed = 0;
 
@@ -47,10 +51,14 @@ function setupControls(camera, playerVelocity, playerDirection, resetPlayer, set
   document.body.addEventListener("mousedown", (e) => {
     if (e.button === 0) { // 0 = left mouse button
       run = true;
+      jump = true;
+
+      // Delay jump to make movement feel more responsive
+      jumpTimer = jumpDelay;
     }
     if (e.button === 2) { // 2 = right mouse button
-      jump = true;
-      jumpTimer = jumpDelay;
+      // jump = true;
+      // jumpTimer = jumpDelay;
     }
   });
 
@@ -62,7 +70,19 @@ function setupControls(camera, playerVelocity, playerDirection, resetPlayer, set
   });
 
   function applyControls(deltaTime, playerOnFloor, camera) {
-    const speedDelta = deltaTime * (playerOnFloor ? 25 : 8);
+    // const speedDelta = deltaTime * (playerOnFloor ? 25 : 8);
+
+    // Stabilize collision detection over onFloorDelay frames
+    if ( playerOnFloor ) {
+     onFloorCounter = onFloorDelay;
+    }
+
+    if ( onFloorCounter > 0 ) {
+      onFloor = true;
+    }
+    else {
+      onFloor = false;
+    }
 
     // ✅ Manually update the camera's world matrix
     camera.updateMatrixWorld();
@@ -79,16 +99,14 @@ function setupControls(camera, playerVelocity, playerDirection, resetPlayer, set
     }
 
     // Jump
-    if (jump && playerOnFloor && jumpTimer > 0) {
+    if (jump && onFloor && jumpTimer > 0) {
       playerVelocity.y = 10;
       jump = false;
-      playerOnFloor = false;
+      onFloor = false;
     }
 
-    jumpTimer -= 1;
-
     // Run
-    if (run) {
+    if (run && !onFloor) {
       speed += deltaTime * acceleration;
       speed = Math.min(speed, maxSpeed);
       
@@ -96,14 +114,15 @@ function setupControls(camera, playerVelocity, playerDirection, resetPlayer, set
       newVelocity.y = playerVelocity.y;
       playerVelocity.copy(newVelocity);
     }
-    else if (!run && playerOnFloor)
+
+    if (onFloor)
       {
       speed = 0;
     }
 
-    setIsRunning(run);
+    onFloorCounter -= 1;
 
-    console.log(playerOnFloor);
+    jumpTimer -= 1;
   }
 
   return applyControls;

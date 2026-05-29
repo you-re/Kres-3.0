@@ -1,14 +1,15 @@
 {
-  "name": "fps_basic",
+  "name": "Kres-3.0",
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "vite build",
-    "dev": "vite"
+    "dev": "vite",
+    "preview": "vite preview"
   },
   "keywords": [],
-  "author": "",
+  "author": "Luka Lavrenci, Jure Sulic",
   "license": "ISC",
   "description": "",
   "dependencies": {

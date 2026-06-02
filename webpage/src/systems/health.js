@@ -18,12 +18,13 @@ function createHealthSystem () {
         }
     }
 
-    function takeDamage ( amount ) {
+    function takeDamage ( amount, kill = false ) {
+
         health = Math.max(0, health - Math.pow(amount, damagePower));
         console.log("Health: " + health);
         onHealthChange(health);
 
-        if ( health <= 0 ) {
+        if ( health <= 0 || kill ) {
             console.log("Ouch! Player died. Respawning...");
             onDeath();
             health = MAX_HEALTH;

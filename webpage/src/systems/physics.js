@@ -169,9 +169,8 @@ function createPhysics( scene, animation, giveDamage ) {
 
       // Reset player if falling too fast
       if ((playerVelocity.y < -40)) {
-        recievingDamage = true;
-        giveDamage(100000);
-        resetPlayer();
+        giveDamage(0, true);
+        recievingDamage = false;
       }
     };
   }

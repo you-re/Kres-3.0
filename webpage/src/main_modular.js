@@ -11,6 +11,7 @@ import { loadWorld } from "./components/world";
 import { createRenderer } from "./systems/renderer";
 import { createStats } from "./systems/stats";
 import { Resizer } from "./systems/resizer";
+import { createComposer } from "./systems/postprocessing";
 // Health System
 import { createHealthSystem } from "./systems/health"
 
@@ -21,7 +22,6 @@ import { setupControls } from "./systems/controls";
 // UI & Debug
 import { createDebugGUI } from "./components/debug";
 import { createUI } from "./components/UI";
-
 
 const clock = new THREE.Clock();
 
@@ -43,6 +43,7 @@ scene.add(fillLight1, directionalLight);
 
 const container = document.getElementById("container");
 const renderer = createRenderer(animate);
+const { composer, setRadialBlurStrength, setColorOverlayStrength } = createComposer(renderer, scene, camera);
 container.appendChild(renderer.domElement);
 const stats = createStats();
 container.appendChild(stats.domElement);
@@ -107,9 +108,14 @@ function animate() {
   // ✅ Update gun animations
   if (gunMixer) gunMixer.update(deltaTime);
 
-  renderer.render(scene, camera);
+  let verticalSpeedEffect = THREE.MathUtils.clamp((Math.max(0, (-playerVelocity.y)) / 20) - 1, 0, 10.0);
+
+  setRadialBlurStrength(verticalSpeedEffect);
+  setColorOverlayStrength(Math.pow(verticalSpeedEffect, 2));
+
+  composer.render();
   stats.update();
 }
 
 // Resizer
-Resizer(camera, renderer);
+Resizer(camera, renderer, composer);

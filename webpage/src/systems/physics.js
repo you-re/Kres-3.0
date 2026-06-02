@@ -6,7 +6,7 @@ import { createRenderer } from "./renderer";
 // Animations
 import { createCamera, playGunAnimation } from "../components/camera";
 
-const GRAVITY = 20;
+const GRAVITY = 25;
 const STEPS_PER_FRAME = 5;
 
 const dampingStrength = 32; 
@@ -154,22 +154,23 @@ function createPhysics( scene, animation, giveDamage ) {
 
     if ( !infiniteFalling ) {
 
-      if (playerVelocity.y < -10) {
+      if (playerVelocity.y < -20) {
         recievingDamage = true;
         damageGiven = Math.min(0, playerVelocity.y);
-        console.log("Velocity: " + playerVelocity.y)
+        // console.log("Velocity: " + playerVelocity.y)
       }
 
       if ( playerOnFloor && recievingDamage ) {
           giveDamage(Math.abs(damageGiven));
-          console.log("Damage given: " + damageGiven);
+          // console.log("Damage given: " + damageGiven);
           damageGiven = 0;
           recievingDamage = false;
       }
 
       // Reset player if falling too fast
-      if ((playerVelocity.y < -20)) {
-        giveDamage(1000);
+      if ((playerVelocity.y < -40)) {
+        recievingDamage = true;
+        giveDamage(100000);
         resetPlayer();
       }
     };

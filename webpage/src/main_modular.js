@@ -20,6 +20,7 @@ import { setupControls } from "./systems/controls";
 
 // UI & Debug
 import { createDebugGUI } from "./components/debug";
+import { createUI } from "./components/UI";
 
 
 const clock = new THREE.Clock();
@@ -49,8 +50,13 @@ container.appendChild(stats.domElement);
 // Initialize Health
 const {
   takeDamage,
-  health
+  getHealth,
+  setOnDeath,
+  setOnHealthChange
 } = createHealthSystem ();
+
+const ui = createUI();
+ui.updateHealth(getHealth());
 
 // Initialize Physics & Controls
 const {
@@ -62,6 +68,9 @@ const {
   setInfiniteFalling,
   resetPlayer
 } = createPhysics( scene, animations, takeDamage ); // Pass animations to createPhysics
+
+setOnHealthChange(ui.updateHealth);
+setOnDeath(resetPlayer);
 
 // Create debug UI
 createDebugGUI({

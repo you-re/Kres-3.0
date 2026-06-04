@@ -106,7 +106,6 @@ function createUI() {
       </div>
       <!--
       <div id="health-text">Health: 100 / 100</div>
-      -->
     </div>
   `;
 
@@ -124,8 +123,8 @@ function createUI() {
     if (healthText) healthText.textContent = `Health: ${normalized} / 100`;
 
     if (healthFillInner) {
-      const t = Math.pow(normalized / 100, 0.25);
-      const color = lerpHueColor(colorLow, colorHigh, t) + "80";
+      const t = Math.pow(normalized / 100, 0.1);
+      const color = lerpHueColor(colorLow, colorHigh, t);
       healthFillInner.style.backgroundColor = color;
     }
   }

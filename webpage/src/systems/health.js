@@ -21,6 +21,7 @@ function createHealthSystem () {
     function takeDamage ( amount, kill = false ) {
 
         health = Math.max(0, health - Math.pow(amount, damagePower));
+        health = Math.ceil(health / 10) * 10;
         console.log("Health: " + health);
         onHealthChange(health);
 

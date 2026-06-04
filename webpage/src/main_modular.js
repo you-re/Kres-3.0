@@ -45,8 +45,14 @@ const container = document.getElementById("container");
 const renderer = createRenderer(animate);
 const { composer, setRadialBlurStrength, setColorOverlayStrength } = createComposer(renderer, scene, camera);
 container.appendChild(renderer.domElement);
-const stats = createStats();
-container.appendChild(stats.domElement);
+let stats;
+if (import.meta.env && import.meta.env.DEV) {
+  stats = createStats();
+  container.appendChild(stats.domElement);
+} else {
+  // No-op stats for production builds so `stats.update()` is safe to call
+  stats = { update: () => {} };
+}
 
 // Initialize Health
 const {
@@ -74,13 +80,15 @@ setOnHealthChange(ui.updateHealth);
 setOnDeath(resetPlayer);
 
 // Create debug UI
-createDebugGUI({
-  onInfiniteFallingChange: setInfiniteFalling,
-  setFogColor: setFogColor,
-  setFogDensity: setFogDensity,
-  setSunColor: setSunColor,
-  setHorizonColor: setHorizonColor
-});
+if (import.meta.env && import.meta.env.DEV) {
+  createDebugGUI({
+    onInfiniteFallingChange: setInfiniteFalling,
+    setFogColor: setFogColor,
+    setFogDensity: setFogDensity,
+    setSunColor: setSunColor,
+    setHorizonColor: setHorizonColor
+  });
+}
 
 const applyControls = setupControls(
   camera, // Pass the correct camera instance

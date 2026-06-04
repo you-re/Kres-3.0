@@ -99,40 +99,36 @@ function createUI() {
   uiRoot.innerHTML = `
     <div id="health-widget">
       <div id="health-container">
-        <div id="health-fill"></div>
+        <div id="health-fill">
+          <div id="health-fill-inner"></div>
+        </div>
+        <div id="health-bar-art"></div>
       </div>
+      <!--
       <div id="health-text">Health: 100 / 100</div>
+      -->
     </div>
   `;
 
   document.body.appendChild(uiRoot);
 
-  const healthFill = uiRoot.querySelector("#health-fill");
+  const healthFillInner = uiRoot.querySelector("#health-fill-inner");
   const healthText = uiRoot.querySelector("#health-text");
 
   const colorLow = "#ff1100";
   const colorHigh = "#0091ff";
-  // color helpers moved to top-level
 
   function updateHealth(value) {
     const normalized = Math.max(0, Math.min(100, Math.round(value)));
-    if (healthFill) healthFill.style.width = `${normalized}%`;
+    if (healthFillInner) healthFillInner.style.width = `${normalized}%`;
     if (healthText) healthText.textContent = `Health: ${normalized} / 100`;
 
-    if (healthFill) {
+    if (healthFillInner) {
       const t = Math.pow(normalized / 100, 0.25);
-      const color = lerpHueColor(colorLow, colorHigh, t) + "80"; // + transparency
-      healthFill.style.background = `
-          repeating-linear-gradient(
-            120deg,
-            ${color},
-            ${color} 20px,
-            #00000000 20px,
-            #00000000 25px
-          )
-        `;
+      const color = lerpHueColor(colorLow, colorHigh, t) + "80";
+      healthFillInner.style.backgroundColor = color;
     }
-    }
+  }
 
   return {
     updateHealth,

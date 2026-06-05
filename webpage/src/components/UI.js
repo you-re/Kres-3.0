@@ -93,7 +93,7 @@ function lerpHueColor(startHex, endHex, t) {
   return formatHexColor(rgb);
 }
 
-function createUI() {
+function createUI({ onTriggerMessageShown, onTriggerMessageHidden } = {}) {
   const uiRoot = document.createElement("div");
   uiRoot.id = "ui-root";
   uiRoot.innerHTML = `
@@ -107,12 +107,18 @@ function createUI() {
       <!--
       <div id="health-text">Health: 100 / 100</div>
     </div>
+    -->
+    <div id="trigger-message" class="hidden" role="dialog" aria-live="polite">
+      <p id="trigger-message-text"></p>
+    </div>
   `;
 
   document.body.appendChild(uiRoot);
 
   const healthFillInner = uiRoot.querySelector("#health-fill-inner");
   const healthText = uiRoot.querySelector("#health-text");
+  const triggerMessage = uiRoot.querySelector("#trigger-message");
+  const triggerMessageText = uiRoot.querySelector("#trigger-message-text");
 
   const colorLow = "#ff1100";
   const colorHigh = "#0091ff";
@@ -129,8 +135,66 @@ function createUI() {
     }
   }
 
+  const TRIGGER_DISMISS_LOCK = 400;
+  let dismissEnabled = false;
+  let dismissEnableTimeout = null;
+
+  function showTriggerMessage(message) {
+    if (!triggerMessage || !triggerMessageText) return;
+    if (dismissEnableTimeout) {
+      clearTimeout(dismissEnableTimeout);
+      dismissEnableTimeout = null;
+    }
+
+    dismissEnabled = false;
+    triggerMessageText.textContent = message;
+    triggerMessage.classList.remove("hidden");
+    if (typeof onTriggerMessageShown === "function") {
+      onTriggerMessageShown();
+    }
+    if (document.exitPointerLock) {
+      document.exitPointerLock();
+    }
+
+    dismissEnableTimeout = setTimeout(() => {
+      dismissEnabled = true;
+      dismissEnableTimeout = null;
+    }, TRIGGER_DISMISS_LOCK);
+  }
+
+  function clearTriggerMessage() {
+    if (!triggerMessage) return;
+    triggerMessage.classList.add("hidden");
+    triggerMessageText.textContent = "";
+    if (typeof onTriggerMessageHidden === "function") {
+      onTriggerMessageHidden();
+    }
+  }
+
+  function onTriggerMessageClick(event) {
+    event.preventDefault();
+    event.stopPropagation();
+    if (!dismissEnabled) return;
+
+    clearTriggerMessage();
+    if (document.body.requestPointerLock) {
+      document.body.requestPointerLock();
+    }
+  }
+
+  if (triggerMessage) {
+    triggerMessage.addEventListener("mousedown", (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+    });
+    triggerMessage.addEventListener("click", onTriggerMessageClick);
+    triggerMessage.addEventListener("pointerup", onTriggerMessageClick);
+  }
+
   return {
     updateHealth,
+    showTriggerMessage,
+    clearTriggerMessage,
   };
 }
 

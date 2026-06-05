@@ -1,12 +1,8 @@
 import * as THREE from "three";
-import { vec3 } from "three/tsl";
 
-function setupControls(camera, playerVelocity, playerDirection, resetPlayer) {
-  const keyStates = {};
-
+function setupControls(camera, playerVelocity, resetPlayer) {
   const acceleration = 20;
   const maxSpeed = 10;
-  const glideSpeed = 0.01;
 
   let run = false;
   let jump = false;
@@ -20,42 +16,40 @@ function setupControls(camera, playerVelocity, playerDirection, resetPlayer) {
   let speed = 0;
 
   let disabledMovement = false;
+  let inputEnabled = true;
+
+  function setInputEnabled(value) {
+    inputEnabled = Boolean(value);
+    if (!inputEnabled) {
+      run = false;
+      jump = false;
+    }
+  }
 
   document.addEventListener(
     "keydown",
     (event) => {
-      keyStates[event.code] = true;
-
-      // ← Add reset logic here with run/jump
       if (event.code === "KeyR") {
         resetPlayer();
       }
 
-      // Disable or enable player movement
       if (event.code === "KeyM") {
         disabledMovement = !disabledMovement;
         if (disabledMovement) {
           document.exitPointerLock();
-        }
-        else {
+        } else {
           document.body.requestPointerLock();
         }
-        console.log("Movement: ");
+        console.log("Movement toggled:", disabledMovement);
       }
     }
-  );
-
-  document.addEventListener(
-    "keyup",
-    (event) => (keyStates[event.code] = false)
   );
 
   document.body.addEventListener("click", () => {
-    if (!disabledMovement) {
-      document.body.requestPointerLock()
-      }
+    if (!disabledMovement && inputEnabled) {
+      document.body.requestPointerLock();
     }
-  );
+  });
 
   document.body.addEventListener("mousemove", (event) => {
     if ((document.pointerLockElement === document.body) && !disabledMovement) {
@@ -89,6 +83,7 @@ function setupControls(camera, playerVelocity, playerDirection, resetPlayer) {
   });
 
   function applyControls(deltaTime, playerOnFloor, camera) {
+    if (!inputEnabled) return;
 
     // Stabilize collision detection over onFloorDelay frames
     if ( playerOnFloor ) {
@@ -145,7 +140,10 @@ function setupControls(camera, playerVelocity, playerDirection, resetPlayer) {
     jumpTimer -= 1;
   }
 
-  return applyControls;
+  return {
+    applyControls,
+    setInputEnabled,
+  };
 }
 
 export { setupControls };

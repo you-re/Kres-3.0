@@ -18,6 +18,7 @@ import { createHealthSystem } from "./systems/health"
 // Physics & Controls
 import { createPhysics, STEPS_PER_FRAME } from "./systems/physics";
 import { setupControls } from "./systems/controls";
+import { createTriggerSystem } from "./systems/triggers";
 
 // UI & Debug
 import { createDebugGUI } from "./components/debug";
@@ -62,22 +63,56 @@ const {
   setOnHealthChange
 } = createHealthSystem ();
 
-const ui = createUI();
+let setMovementEnabled = () => {};
+
+const ui = createUI({
+  onTriggerMessageShown: () => {
+    setMovementEnabled(false);
+  },
+  onTriggerMessageHidden: () => {
+    setMovementEnabled(true);
+  },
+});
 ui.updateHealth(getHealth());
 
 // Initialize Physics & Controls
 const {
   playerCollider,
   playerVelocity,
-  playerDirection,
   updatePlayer,
   worldOctree,
   setInfiniteFalling,
   resetPlayer
 } = createPhysics( scene, animations, takeDamage ); // Pass animations to createPhysics
 
+const controls = setupControls(
+  camera,
+  playerVelocity,
+  resetPlayer
+);
+const { applyControls } = controls;
+setMovementEnabled = controls.setInputEnabled;
+
 setOnHealthChange(ui.updateHealth);
-setOnDeath(resetPlayer);
+
+const triggerSystem = createTriggerSystem({
+  scene,
+  playerCollider,
+  onTrigger: (trigger) => {
+    const message = trigger.text || `Triggered: ${trigger.name || trigger.id}`;
+    ui.showTriggerMessage(message);
+  },
+  debug: false,
+});
+triggerSystem.loadTriggers();
+
+setOnDeath(() => {
+  triggerSystem.resetTriggers();
+  if (typeof ui.clearTriggerMessage === "function") {
+    ui.clearTriggerMessage();
+  }
+  resetPlayer();
+});
 
 // Create debug UI
 if (import.meta.env && import.meta.env.DEV) {
@@ -86,16 +121,10 @@ if (import.meta.env && import.meta.env.DEV) {
     setFogColor: setFogColor,
     setFogDensity: setFogDensity,
     setSunColor: setSunColor,
-    setHorizonColor: setHorizonColor
+    setHorizonColor: setHorizonColor,
+    onTriggerDebugChange: triggerSystem.setDebug,
   });
 }
-
-const applyControls = setupControls(
-  camera, // Pass the correct camera instance
-  playerVelocity,
-  playerDirection,
-  resetPlayer
-);
 
 // Load World
 loadWorld(scene, worldOctree);
@@ -111,6 +140,9 @@ function animate() {
   for (let i = 0; i < STEPS_PER_FRAME; i++) {
     applyControls(deltaTime, playerCollider.onFloor, camera);
     updatePlayer(deltaTime, worldOctree, camera);
+    if (playerCollider.onFloor) {
+      triggerSystem.checkTriggers();
+    }
   }
 
   // ✅ Update gun animations

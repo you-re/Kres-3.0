@@ -23,6 +23,7 @@ import { createTriggerSystem } from "./systems/triggers";
 // UI & Debug
 import { createDebugGUI } from "./components/debug";
 import { createUI } from "./components/UI";
+import { deltaTime } from "three/tsl";
 
 const clock = new THREE.Clock();
 
@@ -103,12 +104,16 @@ const triggerSystem = createTriggerSystem({
 });
 triggerSystem.loadTriggers();
 
+const FADE_IN = 4.0 // seconds
+let fadeInTimer = FADE_IN;
+
 setOnDeath(() => {
   triggerSystem.resetTriggers();
   if (typeof ui.clearTriggerMessage === "function") {
     ui.clearTriggerMessage();
   }
   resetPlayer();
+  fadeInTimer = FADE_IN;
 });
 
 // Create debug UI
@@ -125,6 +130,8 @@ if (import.meta.env && import.meta.env.DEV) {
 
 // Load World
 loadWorld(scene, worldOctree);
+
+
 
 // Add Background Sound Effects
 // addBgMusic();
@@ -154,7 +161,14 @@ function animate() {
   let verticalSpeedEffect = THREE.MathUtils.clamp((Math.max(0, (-playerVelocity.y)) / 20) - 1, 0, 10.0);
 
   setRadialBlurStrength(verticalSpeedEffect);
-  setColorOverlayStrength(Math.pow(verticalSpeedEffect, 2));
+
+  if ( fadeInTimer > 0) {
+    setColorOverlayStrength ( Math.pow(fadeInTimer / FADE_IN, 0.2));
+    fadeInTimer -= (deltaTime * STEPS_PER_FRAME ); // * STEPS_PER_FRAME to restore real time
+  }
+  else {
+    setColorOverlayStrength(Math.pow(verticalSpeedEffect, 2));
+  }
 
   composer.render();
   stats.update();

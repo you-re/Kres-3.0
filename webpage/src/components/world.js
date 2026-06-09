@@ -37,7 +37,11 @@ function loadWorld(scene, worldOctree) {
     }
   });
 
-  loadModel(loader, "collision-world.glb", scene, worldOctree);
+  loadModel(loader, "collision-world-01.glb", scene, worldOctree);
+  loadModel(loader, "collision-world-02.glb", scene, worldOctree);
+  loadModel(loader, "collision-world-03.glb", scene, worldOctree);
+  loadModel(loader, "collision-world-04.glb", scene, worldOctree);
+  loadModel(loader, "collision-world-05.glb", scene, worldOctree);
 }
 
 export { loadWorld, worldAnimationMixers };

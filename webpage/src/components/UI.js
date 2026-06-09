@@ -120,8 +120,12 @@ function createUI({ onTriggerMessageShown, onTriggerMessageHidden } = {}) {
   const triggerMessage = uiRoot.querySelector("#trigger-message");
   const triggerMessageText = uiRoot.querySelector("#trigger-message-text");
 
-  const colorLow = "#ff1100";
-  const colorHigh = "#0091ff";
+  if (triggerMessageText) {
+    triggerMessageText.style.whiteSpace = "pre-wrap";
+  }
+
+  const colorLow = "#671f1a";
+  const colorHigh = "#ff0000";
 
   function updateHealth(value) {
     const normalized = Math.max(0, Math.min(100, Math.round(value)));
@@ -129,41 +133,43 @@ function createUI({ onTriggerMessageShown, onTriggerMessageHidden } = {}) {
     if (healthText) healthText.textContent = `Health: ${normalized} / 100`;
 
     if (healthFillInner) {
-      const t = Math.pow(normalized / 100, 0.1);
+      const t = Math.pow(normalized / 100, 0.5);
       const color = lerpHueColor(colorLow, colorHigh, t);
       healthFillInner.style.backgroundColor = color;
     }
   }
 
-  const TRIGGER_DISMISS_LOCK = 400;
-  let dismissEnabled = false;
-  let dismissEnableTimeout = null;
+  const AUTO_HIDE_MS = 5000;
+  let hideTimeout = null;
 
-  function showTriggerMessage(message) {
+  function showTriggerMessage(message, durationMs) {
     if (!triggerMessage || !triggerMessageText) return;
-    if (dismissEnableTimeout) {
-      clearTimeout(dismissEnableTimeout);
-      dismissEnableTimeout = null;
+    if (hideTimeout) {
+      clearTimeout(hideTimeout);
+      hideTimeout = null;
     }
 
-    dismissEnabled = false;
-    triggerMessageText.textContent = message;
+    const safeMessage = String(message || "").replace(/<br\s*\/?\>/gi, "\n");
+    triggerMessageText.textContent = safeMessage;
     triggerMessage.classList.remove("hidden");
     if (typeof onTriggerMessageShown === "function") {
       onTriggerMessageShown();
     }
-    if (document.exitPointerLock) {
-      document.exitPointerLock();
-    }
 
-    dismissEnableTimeout = setTimeout(() => {
-      dismissEnabled = true;
-      dismissEnableTimeout = null;
-    }, TRIGGER_DISMISS_LOCK);
+    // Auto-hide after duration Ms or AUTO_HIDE_MS
+    const timeout = Number(durationMs) > 0 ? Number(durationMs) : AUTO_HIDE_MS;
+    hideTimeout = setTimeout(() => {
+      clearTriggerMessage();
+      hideTimeout = null;
+    }, timeout);
   }
 
   function clearTriggerMessage() {
     if (!triggerMessage) return;
+    if (hideTimeout) {
+      clearTimeout(hideTimeout);
+      hideTimeout = null;
+    }
     triggerMessage.classList.add("hidden");
     triggerMessageText.textContent = "";
     if (typeof onTriggerMessageHidden === "function") {
@@ -172,21 +178,11 @@ function createUI({ onTriggerMessageShown, onTriggerMessageHidden } = {}) {
   }
 
   function onTriggerMessageClick(event) {
-    event.preventDefault();
-    event.stopPropagation();
-    if (!dismissEnabled) return;
-
+    // Dismiss immediately when clicked
     clearTriggerMessage();
-    if (document.body.requestPointerLock) {
-      document.body.requestPointerLock();
-    }
   }
 
   if (triggerMessage) {
-    triggerMessage.addEventListener("mousedown", (event) => {
-      event.preventDefault();
-      event.stopPropagation();
-    });
     triggerMessage.addEventListener("click", onTriggerMessageClick);
     triggerMessage.addEventListener("pointerup", onTriggerMessageClick);
   }

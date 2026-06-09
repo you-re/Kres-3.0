@@ -1,8 +1,16 @@
+@font-face {
+  font-family: "DOTKadiz";
+  src: url("/fonts/DOTKadizTRIAL-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: poppins, sans-serif;
+  font-family: "DOTKadiz", sans-serif;
 }
 
 html,
@@ -119,16 +127,16 @@ canvas {
   transform: translate(-50%, -50%);
   max-width: min(85vw, 520px);
   padding: 1.25rem 1.5rem;
-  background: rgba(8, 10, 18, 0.92);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 24px;
-  box-shadow: 0 22px 70px rgba(0, 0, 0, 0.4);
+  background: rgba(0, 0, 0, 1);
+  border: 2px solid rgba(255, 255, 255, 1);
+  /* border-radius: 5px; */
+  box-shadow: 20px 20px 0px rgb(255, 0, 0);
   color: #ffffff;
   z-index: 1001;
   pointer-events: auto;
   cursor: pointer;
   user-select: none;
-  backdrop-filter: blur(12px);
+  /* backdrop-filter: blur(12px); */
 }
 
 #trigger-message.hidden {
@@ -137,7 +145,7 @@ canvas {
 
 #trigger-message p {
   margin: 0;
-  font-size: 1rem;
+  font-size: 1.5rem;
   line-height: 1.7;
   letter-spacing: 0.01em;
   text-align: center;

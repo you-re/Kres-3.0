@@ -17,12 +17,12 @@ function createComposer(renderer, scene, camera) {
 
   const bloomPass = new UnrealBloomPass(
     new Vector2(window.innerWidth, window.innerHeight),
-    1.2,
-    0.1,
+    2.0,
+    0.5,
     0.5
   );
-  bloomPass.threshold = 1.2;
-  bloomPass.strength = 0.1;
+  bloomPass.threshold = 2.0;
+  bloomPass.strength = 0.5;
   bloomPass.radius = 0.5;
 
   composer.addPass(bloomPass);

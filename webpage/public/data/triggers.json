@@ -1,11 +1,26 @@
 {
-    "trigger_start": "Click to jump, click + hold to float, move mouse to look, click on pop-up to dismiss.",
+    "trigger_start": {
+        "text": "Move mouse to look \nClick to jump \nClick + hold to float",
+        "duration": 10000
+    },
 
-    "trigger_01": "You have been banished from your people's planet onto an unknown and strange world. You awaken in an unknown place. The air is thick and full of smog",
+    "trigger_01": {
+        "text": "Banished from your people's planet onto an unknown and strange world, you wake up. The air is thick and full of smog",
+        "duration": 8000
+    },
 
-    "trigger_02": "Wandering deeper into the mantle (crust) you start realizing these are the artifacts of a lost civilization.",
+    "trigger_02": {
+        "text": "Wandering deeper into the mantle, you realize; these are the artifacts of a lost civilization.",
+        "duration": 8000
+    },
 
-    "trigger_03": "Your family and friends are just a distant memory now. There isn't a way back.",
+    "trigger_03": {
+        "text": "Your family and friends are just a distant memory now. There isn't a way back.",
+        "duration": 8000
+    },
 
-    "trigger_04": "The world you once knew starts fading. People forget your name. Forget the names of places you knew and cherished. Forget your species ever existed in the first place"
+    "trigger_04": {
+        "text": "The world you once knew starts to fade. People forgot your name. Forgot the names of places you knew and cherished. Forget your species ever existed in the first place.",
+        "duration": 12000
+    }
 }

@@ -4,7 +4,7 @@ import * as THREE from "three";
 import { createScene } from "./components/scene";
 import { createCamera, gunMixer } from "./components/camera";
 import { createLights } from "./components/lights";
-import { loadWorld } from "./components/world";
+import { loadWorld, worldAnimationMixers } from "./components/world";
 // import { addBgMusic } from "./components/music";
 
 // Systems
@@ -58,6 +58,7 @@ if (import.meta.env && import.meta.env.DEV) {
 // Initialize Health
 const {
   takeDamage,
+  restoreHealth,
   getHealth,
   setOnDeath,
   setOnHealthChange
@@ -65,14 +66,7 @@ const {
 
 let setMovementEnabled = () => {};
 
-const ui = createUI({
-  onTriggerMessageShown: () => {
-    setMovementEnabled(false);
-  },
-  onTriggerMessageHidden: () => {
-    setMovementEnabled(true);
-  },
-});
+const ui = createUI();
 ui.updateHealth(getHealth());
 
 // Initialize Physics & Controls
@@ -100,7 +94,10 @@ const triggerSystem = createTriggerSystem({
   playerCollider,
   onTrigger: (trigger) => {
     const message = trigger.text || `Triggered: ${trigger.name || trigger.id}`;
-    ui.showTriggerMessage(message);
+    // pass optional duration (ms) from trigger data to UI
+    ui.showTriggerMessage(message, trigger.duration);
+    // restore player's health when touching a trigger
+    if (typeof restoreHealth === "function") restoreHealth(true);
   },
   debug: false,
 });
@@ -136,6 +133,7 @@ loadWorld(scene, worldOctree);
 
 function animate() {
   const deltaTime = Math.min(0.05, clock.getDelta()) / STEPS_PER_FRAME;
+  const elapsedTime = clock.getElapsedTime();
 
   for (let i = 0; i < STEPS_PER_FRAME; i++) {
     applyControls(deltaTime, playerCollider.onFloor, camera);
@@ -147,6 +145,11 @@ function animate() {
 
   // ✅ Update gun animations
   if (gunMixer) gunMixer.update(deltaTime);
+
+  // ✅ Update world object animations
+  worldAnimationMixers.forEach((mixer) => mixer.update(deltaTime * 5));
+
+  triggerSystem.updateTriggerObjects(deltaTime, elapsedTime);
 
   let verticalSpeedEffect = THREE.MathUtils.clamp((Math.max(0, (-playerVelocity.y)) / 20) - 1, 0, 10.0);
 

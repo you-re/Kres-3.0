@@ -114,8 +114,8 @@ function createUI() {
   const healthFillInner = uiRoot.querySelector("#health-fill-inner");
   const healthText = uiRoot.querySelector("#health-text");
 
-  const colorLow = "#ff1100";
-  const colorHigh = "#0091ff";
+  const colorLow = "#671f1a";
+  const colorHigh = "#ff0000";
 
   function updateHealth(value) {
     const normalized = Math.max(0, Math.min(100, Math.round(value)));

@@ -131,8 +131,6 @@ if (import.meta.env && import.meta.env.DEV) {
 // Load World
 loadWorld(scene, worldOctree);
 
-
-
 // Add Background Sound Effects
 // addBgMusic();
 
@@ -169,7 +167,7 @@ function animate() {
   else {
     setColorOverlayStrength(Math.pow(verticalSpeedEffect, 2));
   }
-
+  
   composer.render();
   stats.update();
 }

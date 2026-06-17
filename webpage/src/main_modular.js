@@ -4,7 +4,7 @@ import * as THREE from "three";
 import { createScene } from "./components/scene";
 import { createCamera, gunMixer } from "./components/camera";
 import { createLights } from "./components/lights";
-import { loadWorld, worldAnimationMixers } from "./components/world";
+import { loadWorld } from "./components/world";
 // import { addBgMusic } from "./components/music";
 
 // Systems
@@ -18,12 +18,10 @@ import { createHealthSystem } from "./systems/health"
 // Physics & Controls
 import { createPhysics, STEPS_PER_FRAME } from "./systems/physics";
 import { setupControls } from "./systems/controls";
-import { createTriggerSystem } from "./systems/triggers";
 
 // UI & Debug
 import { createDebugGUI } from "./components/debug";
 import { createUI } from "./components/UI";
-import { deltaTime } from "three/tsl";
 
 const clock = new THREE.Clock();
 
@@ -59,13 +57,10 @@ if (import.meta.env && import.meta.env.DEV) {
 // Initialize Health
 const {
   takeDamage,
-  restoreHealth,
   getHealth,
   setOnDeath,
   setOnHealthChange
 } = createHealthSystem ();
-
-let setMovementEnabled = () => {};
 
 const ui = createUI();
 ui.updateHealth(getHealth());
@@ -74,47 +69,15 @@ ui.updateHealth(getHealth());
 const {
   playerCollider,
   playerVelocity,
+  playerDirection,
   updatePlayer,
   worldOctree,
   setInfiniteFalling,
   resetPlayer
 } = createPhysics( scene, animations, takeDamage ); // Pass animations to createPhysics
 
-const controls = setupControls(
-  camera,
-  playerVelocity,
-  resetPlayer
-);
-const { applyControls } = controls;
-setMovementEnabled = controls.setInputEnabled;
-
 setOnHealthChange(ui.updateHealth);
-
-const triggerSystem = createTriggerSystem({
-  scene,
-  playerCollider,
-  onTrigger: (trigger) => {
-    const message = trigger.text || `Triggered: ${trigger.name || trigger.id}`;
-    // pass optional duration (ms) from trigger data to UI
-    ui.showTriggerMessage(message, trigger.duration);
-    // restore player's health when touching a trigger
-    if (typeof restoreHealth === "function") restoreHealth(true);
-  },
-  debug: false,
-});
-triggerSystem.loadTriggers();
-
-const FADE_IN = 4.0 // seconds
-let fadeInTimer = FADE_IN;
-
-setOnDeath(() => {
-  triggerSystem.resetTriggers();
-  if (typeof ui.clearTriggerMessage === "function") {
-    ui.clearTriggerMessage();
-  }
-  resetPlayer();
-  fadeInTimer = FADE_IN;
-});
+setOnDeath(resetPlayer);
 
 // Create debug UI
 if (import.meta.env && import.meta.env.DEV) {
@@ -123,10 +86,16 @@ if (import.meta.env && import.meta.env.DEV) {
     setFogColor: setFogColor,
     setFogDensity: setFogDensity,
     setSunColor: setSunColor,
-    setHorizonColor: setHorizonColor,
-    onTriggerDebugChange: triggerSystem.setDebug,
+    setHorizonColor: setHorizonColor
   });
 }
+
+const applyControls = setupControls(
+  camera, // Pass the correct camera instance
+  playerVelocity,
+  playerDirection,
+  resetPlayer
+);
 
 // Load World
 loadWorld(scene, worldOctree);
@@ -138,36 +107,20 @@ loadWorld(scene, worldOctree);
 
 function animate() {
   const deltaTime = Math.min(0.05, clock.getDelta()) / STEPS_PER_FRAME;
-  const elapsedTime = clock.getElapsedTime();
 
   for (let i = 0; i < STEPS_PER_FRAME; i++) {
     applyControls(deltaTime, playerCollider.onFloor, camera);
     updatePlayer(deltaTime, worldOctree, camera);
-    if (playerCollider.onFloor) {
-      triggerSystem.checkTriggers();
-    }
   }
 
   // ✅ Update gun animations
   if (gunMixer) gunMixer.update(deltaTime);
 
-  // ✅ Update world object animations
-  worldAnimationMixers.forEach((mixer) => mixer.update(deltaTime * 5));
-
-  triggerSystem.updateTriggerObjects(deltaTime, elapsedTime);
-
   let verticalSpeedEffect = THREE.MathUtils.clamp((Math.max(0, (-playerVelocity.y)) / 20) - 1, 0, 10.0);
 
   setRadialBlurStrength(verticalSpeedEffect);
+  setColorOverlayStrength(Math.pow(verticalSpeedEffect, 2));
 
-  if ( fadeInTimer > 0) {
-    setColorOverlayStrength ( Math.pow(fadeInTimer / FADE_IN, 0.2));
-    fadeInTimer -= (deltaTime * STEPS_PER_FRAME ); // * STEPS_PER_FRAME to restore real time
-  }
-  else {
-    setColorOverlayStrength(Math.pow(verticalSpeedEffect, 2));
-  }
-  
   composer.render();
   stats.update();
 }

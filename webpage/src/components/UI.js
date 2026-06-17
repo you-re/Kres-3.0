@@ -93,7 +93,7 @@ function lerpHueColor(startHex, endHex, t) {
   return formatHexColor(rgb);
 }
 
-function createUI({ onTriggerMessageShown, onTriggerMessageHidden } = {}) {
+function createUI() {
   const uiRoot = document.createElement("div");
   uiRoot.id = "ui-root";
   uiRoot.innerHTML = `
@@ -107,25 +107,15 @@ function createUI({ onTriggerMessageShown, onTriggerMessageHidden } = {}) {
       <!--
       <div id="health-text">Health: 100 / 100</div>
     </div>
-    -->
-    <div id="trigger-message" class="hidden" role="dialog" aria-live="polite">
-      <p id="trigger-message-text"></p>
-    </div>
   `;
 
   document.body.appendChild(uiRoot);
 
   const healthFillInner = uiRoot.querySelector("#health-fill-inner");
   const healthText = uiRoot.querySelector("#health-text");
-  const triggerMessage = uiRoot.querySelector("#trigger-message");
-  const triggerMessageText = uiRoot.querySelector("#trigger-message-text");
 
-  if (triggerMessageText) {
-    triggerMessageText.style.whiteSpace = "pre-wrap";
-  }
-
-  const colorLow = "#671f1a";
-  const colorHigh = "#ff0000";
+  const colorLow = "#ff1100";
+  const colorHigh = "#0091ff";
 
   function updateHealth(value) {
     const normalized = Math.max(0, Math.min(100, Math.round(value)));
@@ -133,64 +123,14 @@ function createUI({ onTriggerMessageShown, onTriggerMessageHidden } = {}) {
     if (healthText) healthText.textContent = `Health: ${normalized} / 100`;
 
     if (healthFillInner) {
-      const t = Math.pow(normalized / 100, 0.5);
+      const t = Math.pow(normalized / 100, 0.1);
       const color = lerpHueColor(colorLow, colorHigh, t);
       healthFillInner.style.backgroundColor = color;
     }
   }
 
-  const AUTO_HIDE_MS = 5000;
-  let hideTimeout = null;
-
-  function showTriggerMessage(message, durationMs) {
-    if (!triggerMessage || !triggerMessageText) return;
-    if (hideTimeout) {
-      clearTimeout(hideTimeout);
-      hideTimeout = null;
-    }
-
-    const safeMessage = String(message || "").replace(/<br\s*\/?\>/gi, "\n");
-    triggerMessageText.textContent = safeMessage;
-    triggerMessage.classList.remove("hidden");
-    if (typeof onTriggerMessageShown === "function") {
-      onTriggerMessageShown();
-    }
-
-    // Auto-hide after duration Ms or AUTO_HIDE_MS
-    const timeout = Number(durationMs) > 0 ? Number(durationMs) : AUTO_HIDE_MS;
-    hideTimeout = setTimeout(() => {
-      clearTriggerMessage();
-      hideTimeout = null;
-    }, timeout);
-  }
-
-  function clearTriggerMessage() {
-    if (!triggerMessage) return;
-    if (hideTimeout) {
-      clearTimeout(hideTimeout);
-      hideTimeout = null;
-    }
-    triggerMessage.classList.add("hidden");
-    triggerMessageText.textContent = "";
-    if (typeof onTriggerMessageHidden === "function") {
-      onTriggerMessageHidden();
-    }
-  }
-
-  function onTriggerMessageClick(event) {
-    // Dismiss immediately when clicked
-    clearTriggerMessage();
-  }
-
-  if (triggerMessage) {
-    triggerMessage.addEventListener("click", onTriggerMessageClick);
-    triggerMessage.addEventListener("pointerup", onTriggerMessageClick);
-  }
-
   return {
     updateHealth,
-    showTriggerMessage,
-    clearTriggerMessage,
   };
 }
 

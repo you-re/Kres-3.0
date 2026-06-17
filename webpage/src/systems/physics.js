@@ -38,6 +38,7 @@ function createPhysics( scene, animation, giveDamage ) {
   playerCollider.onFloor = false;
 
   const playerVelocity = new THREE.Vector3();
+  const playerDirection = new THREE.Vector3();
   let playerOnFloor = false;
 
   // ⚙️💡SHOOTER CONTROLS & SOUNDS
@@ -177,6 +178,7 @@ function createPhysics( scene, animation, giveDamage ) {
   return {
     playerCollider,
     playerVelocity,
+    playerDirection,
     updatePlayer,
     worldOctree,
     setInfiniteFalling,

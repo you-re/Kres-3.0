@@ -1,11 +1,11 @@
 import { Scene, Color, Fog, FogExp2 } from "three";
 
 function createScene() {
-  let fogColor = 0x2b1717;
-  let fogDensity = 0.1;
+  let fogColor = 0x000000;
+  let fogDensity = 0.05;
 
   const scene = new Scene();
-  const color = 0x2b1717;
+  const color = 0x000000;
   scene.background = new Color(color);
   // scene.fog = new Fog(color, 5, 40); // color, near, far
   scene.fog = new FogExp2(color, fogDensity);

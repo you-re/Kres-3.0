@@ -91,8 +91,7 @@ const triggerSystem = createTriggerSystem(
   (trigger) => {
     const message = trigger.text || `Triggered: ${trigger.name || trigger.id}`;
     ui.showTriggerMessage(message);
-    // Health restore 
-    healthRestored = true;
+    // Health restore
     healthOverlayTimer = HEALTH_TIMER;
   },
   restoreHealth,
@@ -162,14 +161,9 @@ function animate() {
 
   setRadialBlurStrength(verticalSpeedEffect);
   setColorOverlayStrength(Math.pow(verticalSpeedEffect, 2), new THREE.Color(0x000000));
-  
-  if ( healthRestored ) {
-    healthOverlayTimer = HEALTH_TIMER;
-    healthRestored = false;
-  }
 
   if ( healthOverlayTimer > 0) {
-    setColorOverlayStrength ( Math.pow(healthOverlayTimer / HEALTH_TIMER, 2.0), new THREE.Color(0x00ffaa));
+    setColorOverlayStrength ( Math.pow(healthOverlayTimer / HEALTH_TIMER, 2.0), new THREE.Color(0x3399ff));
     healthOverlayTimer -= (deltaTime * STEPS_PER_FRAME ); // * STEPS_PER_FRAME to restore real time
   }
 

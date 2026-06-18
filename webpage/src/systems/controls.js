@@ -1,12 +1,8 @@
 import * as THREE from "three";
-// removed unused vec3 import
 
-function setupControls(camera, playerVelocity, playerDirection, resetPlayer) {
-  const keyStates = {};
-
+function setupControls(camera, playerVelocity, resetPlayer) {
   const acceleration = 20;
   const maxSpeed = 10;
-  const glideSpeed = 0.01;
 
   let run = false;
   let jump = false;
@@ -20,47 +16,51 @@ function setupControls(camera, playerVelocity, playerDirection, resetPlayer) {
   let speed = 0;
 
   let disabledMovement = false;
+  let inputEnabled = true;
+
+  function setInputEnabled(value) {
+    inputEnabled = Boolean(value);
+    if (!inputEnabled) {
+      run = false;
+      jump = false;
+    }
+  }
 
   document.addEventListener(
     "keydown",
     (event) => {
-      keyStates[event.code] = true;
-
-      // ← Add reset logic here with run/jump
       if (event.code === "KeyR") {
         resetPlayer();
       }
 
-      // Disable or enable player movement
       if (event.code === "KeyM") {
         disabledMovement = !disabledMovement;
         if (disabledMovement) {
           document.exitPointerLock();
-        }
-        else {
+        } else {
           document.body.requestPointerLock();
         }
-        console.log("Movement: ");
+        console.log("Movement toggled:", disabledMovement);
       }
     }
-  );
-
-  document.addEventListener(
-    "keyup",
-    (event) => (keyStates[event.code] = false)
   );
 
   document.body.addEventListener("click", () => {
-    if (!disabledMovement) {
-      document.body.requestPointerLock()
-      }
+    if (!disabledMovement && inputEnabled) {
+      document.body.requestPointerLock();
     }
-  );
+  });
 
   document.body.addEventListener("mousemove", (event) => {
+    const PI = 3.1415;
+
     if ((document.pointerLockElement === document.body) && !disabledMovement) {
+      // X and Y are exchanged -> camera's X axis is up-down
       camera.rotation.y -= event.movementX / 500;
-      camera.rotation.x -= event.movementY / 500;
+      // Handle vertical camera rotation -> Limits angle
+      let newAngleX = camera.rotation.x - event.movementY / 500;
+      newAngleX = Math.min(PI / 2, Math.max(-PI / 2, newAngleX));
+      camera.rotation.x = newAngleX;
     }
   });
 
@@ -89,6 +89,7 @@ function setupControls(camera, playerVelocity, playerDirection, resetPlayer) {
   });
 
   function applyControls(deltaTime, playerOnFloor, camera) {
+    if (!inputEnabled) return;
 
     // Stabilize collision detection over onFloorDelay frames
     if ( playerOnFloor ) {
@@ -145,20 +146,10 @@ function setupControls(camera, playerVelocity, playerDirection, resetPlayer) {
     jumpTimer -= 1;
   }
 
-  function setInputEnabled(enabled) {
-    disabledMovement = !enabled;
-    try {
-      if (!enabled) {
-        document.exitPointerLock && document.exitPointerLock();
-      } else {
-        document.body.requestPointerLock && document.body.requestPointerLock();
-      }
-    } catch (err) {
-      // ignore pointerlock errors
-    }
-  }
-
-  return { applyControls, setInputEnabled };
+  return {
+    applyControls,
+    setInputEnabled,
+  };
 }
 
 export { setupControls };

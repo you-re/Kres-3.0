@@ -2,7 +2,7 @@ import * as THREE from "three";
 
 // Components
 import { createScene } from "./components/scene";
-import { createCamera, gunMixer } from "./components/camera";
+import { createCamera } from "./components/camera";
 import { createLights } from "./components/lights";
 import { loadWorld } from "./components/world";
 // import { addBgMusic } from "./components/music";
@@ -33,7 +33,7 @@ const {
   setFogDensity
 } = createScene();
 
-const { camera, animations } = createCamera(scene); // Destructure to get the camera instance and animations
+const { camera } = createCamera(scene); // Get the camera instance
 const {
   fillLight1,
   directionalLight,
@@ -83,7 +83,7 @@ const {
   worldOctree,
   setInfiniteFalling,
   resetPlayer
-} = createPhysics( scene, animations, takeDamage ); // Pass animations to createPhysics
+} = createPhysics( scene, takeDamage );
 
 const triggerSystem = createTriggerSystem(
   scene,
@@ -141,7 +141,6 @@ loadWorld(scene, worldOctree);
 // addBgMusic();
 
 // Animation Loop
-
 function animate() {
   const deltaTime = Math.min(0.05, clock.getDelta()) / STEPS_PER_FRAME;
 
@@ -154,9 +153,6 @@ function animate() {
     triggerSystem.checkTriggers();
   }
 
-  // ✅ Update gun animations
-  if (gunMixer) gunMixer.update(deltaTime);
-
   let verticalSpeedEffect = THREE.MathUtils.clamp((Math.max(0, (-playerVelocity.y)) / 20) - 1, 0, 10.0);
 
   setRadialBlurStrength(verticalSpeedEffect);
@@ -168,7 +164,7 @@ function animate() {
   }
 
   if ( respawnOverlayTimer > 0 ) {
-    setColorOverlayStrength ( Math.pow(respawnOverlayTimer / RESPAWN_TIMER, 0.5), new THREE.Color(0xffffff));
+    setColorOverlayStrength ( Math.pow(respawnOverlayTimer / (RESPAWN_TIMER), 0.5), new THREE.Color(0xffffff));
     respawnOverlayTimer -= (deltaTime * STEPS_PER_FRAME ); // * STEPS_PER_FRAME to restore real time
   }
 

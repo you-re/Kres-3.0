@@ -3,9 +3,6 @@ import { Capsule } from "three/examples/jsm/Addons.js";
 import { Octree } from "three/examples/jsm/Addons.js";
 import { createRenderer } from "./renderer";
 
-// Animations
-import { createCamera, playGunAnimation } from "../components/camera";
-
 const GRAVITY = 25;
 const STEPS_PER_FRAME = 5;
 
@@ -18,7 +15,6 @@ let damageGiven = 0;
 // Animation Variables
 const renderer = createRenderer();
 const clock = new THREE.Clock();
-let mixer = null; // ✅ Global mixer for animations
 const camera = new THREE.PerspectiveCamera(
   75,
   window.innerWidth / window.innerHeight,
@@ -27,7 +23,7 @@ const camera = new THREE.PerspectiveCamera(
 );
 camera.position.z = 5;
 
-function createPhysics( scene, animation, giveDamage ) {
+function createPhysics( scene, giveDamage ) {
   const worldOctree = new Octree();
 
   const playerCollider = new Capsule(
@@ -40,70 +36,6 @@ function createPhysics( scene, animation, giveDamage ) {
   const playerVelocity = new THREE.Vector3();
   const playerDirection = new THREE.Vector3();
   let playerOnFloor = false;
-
-  // ⚙️💡SHOOTER CONTROLS & SOUNDS
-  /*
-
-  // 🎵 **Preload Sounds**
-  const sounds = {
-    reload: new Audio("/sounds/reload.mp3"),
-  };
-
-  // Reload flag to prevent shooting during reload
-  let isReloading = false; // Prevent shooting during reload
-  let isAnimationPlaying = false; // Flag to track if animation is playing
-
-  // ✅ **Play Animation + Sound**
-  function playAction(
-    animationName,
-    soundKey,
-    autoIdle = true,
-    idleDelay = 300
-  ) {
-    if (isAnimationPlaying) return; // Prevent animation overlap
-
-    isAnimationPlaying = true; // Mark animation as playing
-    playGunAnimation(animationName); // ✅ Play animation
-
-    // **Play the sound**
-    if (soundKey && sounds[soundKey]) {
-      sounds[soundKey].pause(); // Stop any existing sound
-      sounds[soundKey].currentTime = 0; // Restart sound
-      sounds[soundKey].play();
-    }
-
-    // **Return to idle after action (if applicable)**
-    if (autoIdle) {
-      setTimeout(() => {
-        playGunAnimation("Armature|Idle");
-        isAnimationPlaying = false; // Reset animation state after idle
-      }, idleDelay);
-    }
-
-    // Handle reload animation completion
-    if (animationName === "Armature|Reload") {
-      setTimeout(() => {
-        isReloading = false; // Allow shooting again after reload
-        isAnimationPlaying = false; // Mark reload animation as complete
-      }, 3000); // Adjust timing based on reload animation duration (3 seconds here)
-    }
-  }
-
-
-  // ✅ **Ensure Animation Updates Every Frame**
-  function update(deltaTime) {
-    if (mixer) mixer.update(deltaTime);
-  }
-
-  // **Run Animation in Game Loop**
-  renderer.setAnimationLoop(() => {
-    const delta = clock.getDelta();
-    update(delta); // Keep animations running
-    renderer.render(scene, camera);
-  });
-  
-  */
-  //   -----END----SHOOTER WITH AUDIO AND GUN LOAD-----
 
   // Check for infinite falling
   let infiniteFalling = false;

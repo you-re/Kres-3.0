@@ -52,14 +52,12 @@ function setupControls(camera, playerVelocity, resetPlayer) {
   });
 
   document.body.addEventListener("mousemove", (event) => {
-    const PI = 3.1415;
-
     if ((document.pointerLockElement === document.body) && !disabledMovement) {
       // X and Y are exchanged -> camera's X axis is up-down
       camera.rotation.y -= event.movementX / 500;
       // Handle vertical camera rotation -> Limits angle
       let newAngleX = camera.rotation.x - event.movementY / 500;
-      newAngleX = Math.min(PI / 2, Math.max(-PI / 2, newAngleX));
+      newAngleX = Math.min(Math.PI / 2, Math.max(-Math.PI / 2, newAngleX));
       camera.rotation.x = newAngleX;
     }
   });
@@ -73,12 +71,6 @@ function setupControls(camera, playerVelocity, resetPlayer) {
       // Delay jump to make movement feel more responsive
       jumpTimer = jumpDelay;
     }
-    /*
-    if (e.button === 2) { // 2 = right mouse button
-      jump = true;
-      jumpTimer = jumpDelay;
-    }
-    */
   });
 
   // Run event listener

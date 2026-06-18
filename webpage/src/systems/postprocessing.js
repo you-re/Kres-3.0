@@ -4,7 +4,7 @@ import { ShaderPass } from "three/examples/jsm/postprocessing/ShaderPass.js";
 import { UnrealBloomPass } from "three/examples/jsm/postprocessing/UnrealBloomPass.js";
 import { FXAAShader } from "three/examples/jsm/shaders/FXAAShader.js";
 import { ACESFilmicToneMappingShader } from "three/examples/jsm/shaders/ACESFilmicToneMappingShader.js";
-import { Vector2 } from "three";
+import { Vector2, Color } from "three";
 import { RadialEdgeBlurShader } from "../shaders/radialEdgeBlurShader.js";
 import { ColorOverlayShader } from "../shaders/colorOverlayShader.js";
 
@@ -30,9 +30,6 @@ function createComposer(renderer, scene, camera) {
   const radialBlurPass = new ShaderPass(RadialEdgeBlurShader);
   composer.addPass(radialBlurPass);
 
-  const colorOverlayPass = new ShaderPass(ColorOverlayShader);
-  composer.addPass(colorOverlayPass);
-
   const fxaaPass = new ShaderPass(FXAAShader);
   fxaaPass.material.uniforms.resolution.value.set(
     1 / window.innerWidth,
@@ -44,13 +41,17 @@ function createComposer(renderer, scene, camera) {
   toneMapPass.material.uniforms.exposure.value = 1.0;
   composer.addPass(toneMapPass);
 
+  const colorOverlayPass = new ShaderPass(ColorOverlayShader);
+  composer.addPass(colorOverlayPass);
+
   return {
     composer,
     setRadialBlurStrength(value) {
       radialBlurPass.material.uniforms.strength.value = value;
     },
-    setColorOverlayStrength(value) {
+    setColorOverlayStrength(value, color = new Color(0x000000)) {
       colorOverlayPass.material.uniforms.strength.value = value;
+      colorOverlayPass.material.uniforms.overlayColor.value = color;
     }
   };
 }

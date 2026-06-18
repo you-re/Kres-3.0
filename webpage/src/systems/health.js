@@ -34,8 +34,23 @@ function createHealthSystem () {
         }
     }
 
+    function restoreHealth( amount = "full" ) {
+        if (amount === "full") {
+            health = MAX_HEALTH;
+            console.log("Health restored to max: " + MAX_HEALTH);
+        }
+
+        else if (typeof amount === "number" && amount > 0) {
+            health = Math.min(MAX_HEALTH, health + amount);
+            console.log("Health restored: " + health);
+        }
+    
+        onHealthChange(health);
+    }
+
     return {
         takeDamage,
+        restoreHealth,
         getHealth: () => health,
         setOnDeath,
         setOnHealthChange

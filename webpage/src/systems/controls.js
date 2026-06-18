@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import { vec3 } from "three/tsl";
+// removed unused vec3 import
 
 function setupControls(camera, playerVelocity, playerDirection, resetPlayer) {
   const keyStates = {};
@@ -145,7 +145,20 @@ function setupControls(camera, playerVelocity, playerDirection, resetPlayer) {
     jumpTimer -= 1;
   }
 
-  return applyControls;
+  function setInputEnabled(enabled) {
+    disabledMovement = !enabled;
+    try {
+      if (!enabled) {
+        document.exitPointerLock && document.exitPointerLock();
+      } else {
+        document.body.requestPointerLock && document.body.requestPointerLock();
+      }
+    } catch (err) {
+      // ignore pointerlock errors
+    }
+  }
+
+  return { applyControls, setInputEnabled };
 }
 
 export { setupControls };

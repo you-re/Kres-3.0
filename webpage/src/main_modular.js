@@ -22,6 +22,7 @@ import { setupControls } from "./systems/controls";
 // UI & Debug
 import { createDebugGUI } from "./components/debug";
 import { createUI } from "./components/UI";
+import { createTriggerSystem } from "./systems/triggers";
 
 const clock = new THREE.Clock();
 
@@ -55,13 +56,21 @@ if (import.meta.env && import.meta.env.DEV) {
 }
 
 // Initialize Health
+
+const HEALTH_TIMER = 0.5;
+let healthOverlayTimer = 0;
+let healthRestored = false;
+
 const {
   takeDamage,
+  restoreHealth,
   getHealth,
   setOnDeath,
   setOnHealthChange
 } = createHealthSystem ();
 
+let setInputEnabled = () => {};
+// UI is visual-only; control input toggling is handled elsewhere when needed
 const ui = createUI();
 ui.updateHealth(getHealth());
 
@@ -76,8 +85,35 @@ const {
   resetPlayer
 } = createPhysics( scene, animations, takeDamage ); // Pass animations to createPhysics
 
+const triggerSystem = createTriggerSystem(
+  scene,
+  playerCollider,
+  (trigger) => {
+    const message = trigger.text || `Triggered: ${trigger.name || trigger.id}`;
+    ui.showTriggerMessage(message);
+    // Health restore 
+    healthRestored = true;
+    healthOverlayTimer = HEALTH_TIMER;
+  },
+  restoreHealth,
+  {
+    debug: false,
+    onTriggerExit: () => ui.clearTriggerMessage(),
+  }
+);
+
+triggerSystem.loadTriggers();
+
+// Overlay for two seconds
+const RESPAWN_TIMER = 2.0;
+let respawnOverlayTimer = RESPAWN_TIMER;
+
 setOnHealthChange(ui.updateHealth);
-setOnDeath(resetPlayer);
+setOnDeath(() => {
+  triggerSystem.resetTriggers();
+  resetPlayer();
+  respawnOverlayTimer = RESPAWN_TIMER;
+});
 
 // Create debug UI
 if (import.meta.env && import.meta.env.DEV) {
@@ -90,12 +126,14 @@ if (import.meta.env && import.meta.env.DEV) {
   });
 }
 
-const applyControls = setupControls(
+const controls = setupControls(
   camera, // Pass the correct camera instance
   playerVelocity,
   playerDirection,
   resetPlayer
 );
+const { applyControls, setInputEnabled: setInputEnabledFromControls } = controls;
+setInputEnabled = setInputEnabledFromControls || setInputEnabled;
 
 // Load World
 loadWorld(scene, worldOctree);
@@ -113,13 +151,32 @@ function animate() {
     updatePlayer(deltaTime, worldOctree, camera);
   }
 
+  if (playerCollider.onFloor) {
+    triggerSystem.checkTriggers();
+  }
+
   // ✅ Update gun animations
   if (gunMixer) gunMixer.update(deltaTime);
 
   let verticalSpeedEffect = THREE.MathUtils.clamp((Math.max(0, (-playerVelocity.y)) / 20) - 1, 0, 10.0);
 
   setRadialBlurStrength(verticalSpeedEffect);
-  setColorOverlayStrength(Math.pow(verticalSpeedEffect, 2));
+  setColorOverlayStrength(Math.pow(verticalSpeedEffect, 2), new THREE.Color(0x000000));
+  
+  if ( healthRestored ) {
+    healthOverlayTimer = HEALTH_TIMER;
+    healthRestored = false;
+  }
+
+  if ( healthOverlayTimer > 0) {
+    setColorOverlayStrength ( Math.pow(healthOverlayTimer / HEALTH_TIMER, 2.0), new THREE.Color(0x00ffaa));
+    healthOverlayTimer -= (deltaTime * STEPS_PER_FRAME ); // * STEPS_PER_FRAME to restore real time
+  }
+
+  if ( respawnOverlayTimer > 0 ) {
+    setColorOverlayStrength ( Math.pow(respawnOverlayTimer / RESPAWN_TIMER, 0.5), new THREE.Color(0xffffff));
+    respawnOverlayTimer -= (deltaTime * STEPS_PER_FRAME ); // * STEPS_PER_FRAME to restore real time
+  }
 
   composer.render();
   stats.update();

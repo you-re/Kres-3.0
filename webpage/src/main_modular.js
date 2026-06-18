@@ -135,7 +135,7 @@ const { applyControls, setInputEnabled: setInputEnabledFromControls } = controls
 setInputEnabled = setInputEnabledFromControls || setInputEnabled;
 
 // Load World
-await loadWorld(scene, worldOctree);
+loadWorld(scene, worldOctree);
 
 // Add Background Sound Effects
 // addBgMusic();

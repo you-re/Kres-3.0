@@ -1,10 +1,12 @@
 import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 
-const DEFAULT_TRIGGER_RADIUS = 0.5;
-const TRIGGER_DATA_URL = `${import.meta.env.BASE_URL}data/triggers.json`;
+const DEFAULT_TRIGGER_RADIUS = 1.0;
+const BASE_URL = import.meta.env.BASE_URL || "/";
+const TRIGGER_TEXT_URL = `${BASE_URL}data/triggers.json`;
+const TRIGGER_MODEL_BASE_PATH = `${BASE_URL}models/`;
 
-function loadTriggerTextMap(url = TRIGGER_DATA_URL) {
+function loadTriggerTextMap(url = TRIGGER_TEXT_URL) {
   return fetch(url)
     .then((response) => {
       if (!response.ok) {
@@ -18,98 +20,82 @@ function loadTriggerTextMap(url = TRIGGER_DATA_URL) {
     });
 }
 
-function getTriggerId(node) {
-  if (!node.name) return null;
-  const name = String(node.name).trim();
+function getTriggerId(object) {
+  if (!object.name) return null;
+  const name = String(object.name).trim();
   if (!name) return null;
-  return node.userData?.triggerID || node.userData?.id || name;
+  return object.userData?.triggerID || object.userData?.id || name;
 }
 
-function getTriggerRadius(node) {
-  const raw = node.userData?.radius || node.userData?.triggerRadius || node.userData?.r;
-  const parsed = Number(raw);
-  if (!Number.isNaN(parsed) && parsed > 0) return parsed;
+function getTriggerRadius(object) {
+  const radiusValue =
+    object.userData?.radius ||
+    object.userData?.triggerRadius ||
+    object.userData?.r;
+  const radius = Number(radiusValue);
+  return Number.isFinite(radius) && radius > 0 ? radius : DEFAULT_TRIGGER_RADIUS;
+}
 
-  if (node.isMesh && node.geometry) {
-    node.geometry.computeBoundingSphere();
-    const sphere = node.geometry.boundingSphere;
-    if (sphere && sphere.radius >= 0) {
-      const scale = new THREE.Vector3();
-      node.getWorldScale(scale);
-      return sphere.radius * Math.max(scale.x, scale.y, scale.z);
+function getTriggerText(triggerId, textMap) {
+  if (!triggerId || !textMap) return "";
+
+  const trimmedId = String(triggerId).trim();
+  if (trimmedId === "") return "";
+  if (trimmedId in textMap) {
+    const textMessage = textMap[trimmedId];
+    if (typeof textMessage === "string") return textMessage;
+    if (textMessage && typeof textMessage === "object") {
+      if (typeof textMessage.text === "string") return textMessage.text;
+      // fallback to JSON string if value is not the expected shape
+      return String(textMessage);
+    }
+    return String(textMessage);
+  }
+
+  const lowerId = trimmedId.toLowerCase();
+  for (const key of Object.keys(textMap)) {
+    if (String(key).toLowerCase() === lowerId) {
+      const textMessage = textMap[key];
+      if (typeof textMessage === "string") return textMessage;
+      if (textMessage && typeof textMessage === "object" && typeof textMessage.text === "string") return textMessage.text;
+      return String(textMessage);
     }
   }
 
-  return DEFAULT_TRIGGER_RADIUS;
+  return "";
 }
 
-function getTriggerData(triggerId, textMap) {
-  // Returns { text: string, duration: number|null }
-  const result = { text: "", duration: null };
-  if (!triggerId || !textMap) return result;
-  const key = String(triggerId).trim();
-  if (key === "") return result;
-
-  let entry = undefined;
-  if (key in textMap) entry = textMap[key];
-  if (entry === undefined) {
-    const normalized = key.toLowerCase();
-    for (const entryKey of Object.keys(textMap)) {
-      if (String(entryKey).toLowerCase() === normalized) {
-        entry = textMap[entryKey];
-        break;
-      }
-    }
-  }
-
-  if (entry === undefined) return result;
-
-  if (typeof entry === "string") {
-    result.text = entry;
-    return result;
-  }
-
-  if (entry && typeof entry === "object") {
-    if (typeof entry.text === "string") result.text = entry.text;
-    const d = Number(entry.duration);
-    if (!Number.isNaN(d) && d > 0) result.duration = d;
-    return result;
-  }
-
-  return result;
+function isTriggerNode(object) {
+  if (!object.name || object.isMesh) return false;
+  const lowerName = String(object.name).toLowerCase();
+  if (lowerName.includes("trigger")) return true;
+  return (
+    lowerName.includes("trigger") ||
+    object.userData?.trigger === true ||
+    object.userData?.triggerID
+  );
 }
 
-function isTriggerNode(node) {
-  if (!node.name) return false;
-  const lowerName = String(node.name).toLowerCase();
-  if (lowerName.includes("trigger") || lowerName.includes("start_game")) return true;
-  return node.userData && Object.keys(node.userData).length > 0;
-}
-
-function extractTriggersFromScene(root, textMap, scene) {
+function createTriggersFromScene(root, textMap) {
   const triggers = [];
 
-  root.traverse((node) => {
-    if (!node.isObject3D) return;
-    if (!isTriggerNode(node)) return;
+  root.traverse((child) => {
+    if (!child.isObject3D || !isTriggerNode(child)) return;
 
-    const triggerId = getTriggerId(node);
-    if (!triggerId) return;
+    const id = getTriggerId(child);
+    if (!id) return;
 
-    const radius = getTriggerRadius(node);
-    const data = getTriggerData(triggerId, textMap);
-    const text = data.text;
-    const duration = data.duration;
-    const center = node.getWorldPosition(new THREE.Vector3());
+    const radius = getTriggerRadius(child);
+    const text = getTriggerText(id, textMap);
+    const center = child.getWorldPosition(new THREE.Vector3());
 
     triggers.push({
-      id: triggerId,
-      name: node.name,
+      id,
+      name: child.name,
+      object: child,
       center,
       radius,
       text,
-      duration,
-      object: node,
       triggered: false,
       inside: false,
     });
@@ -118,141 +104,153 @@ function extractTriggersFromScene(root, textMap, scene) {
   return triggers;
 }
 
-function sphereIntersectsCapsule(sphereCenter, sphereRadius, capsule) {
-  const line = new THREE.Line3(capsule.start, capsule.end);
-  const closestPoint = new THREE.Vector3();
-  line.closestPointToPoint(sphereCenter, true, closestPoint);
-  return closestPoint.distanceTo(sphereCenter) <= sphereRadius + (capsule.radius || 0);
+function createDebugSpheres(scene, triggers) {
+  const wireframes = [];
+  for (const trigger of triggers) {
+    const sphere = new THREE.Mesh(
+      new THREE.SphereGeometry(trigger.radius, 16, 12),
+      new THREE.MeshBasicMaterial({
+        color: 0xff1144,
+        wireframe: true,
+        transparent: true,
+        opacity: 0.35,
+        depthTest: false,
+      })
+    );
+    sphere.position.copy(trigger.center);
+    scene.add(sphere);
+    wireframes.push(sphere);
+  }
+  return wireframes;
 }
 
-function createTriggerSystem({ scene, playerCollider, onTrigger, debug = false }) {
+function isPlayerInsideTrigger(trigger, playerCollider) {
+  if (!playerCollider || !playerCollider.start || !playerCollider.end) return false;
+
+  // Compute closest point on the player's capsule segment to the trigger center
+  const a = playerCollider.start.clone();
+  const b = playerCollider.end.clone();
+  const p = trigger.center.clone();
+
+  const ab = b.clone().sub(a);
+  const abLenSq = ab.lengthSq();
+
+  let t = 0;
+  if (abLenSq > 0) {
+    const ap = p.clone().sub(a);
+    t = ap.dot(ab) / abLenSq;
+    t = Math.max(0, Math.min(1, t));
+  }
+
+  const closestPoint = a.clone().add(ab.multiplyScalar(t));
+  const playerRadius = playerCollider.radius || 0;
+
+  return closestPoint.distanceTo(p) <= trigger.radius + playerRadius;
+}
+
+function createTriggerSystem(scene, playerCollider, onTrigger, restoreHealth, options = {}) {
   let triggers = [];
+  let debugHelpers = [];
   let loaded = false;
-  let showDebugSpheres = debug;
-  let debugSpheres = [];
-  const TRIGGER_ROTATION_SPEED = Math.PI * 1.0; // radians per second
+  let debug = options.debug === true;
 
-  function createDebugSpheres() {
-    clearDebugSpheres();
-    for (const trigger of triggers) {
-      const sphere = new THREE.Mesh(
-        new THREE.SphereGeometry(trigger.radius, 16, 12),
-        new THREE.MeshBasicMaterial({
-          color: 0x00ffcc,
-          wireframe: true,
-          transparent: true,
-          opacity: 0.35,
-          depthTest: false,
-        })
-      );
-      sphere.position.copy(trigger.center);
-      scene.add(sphere);
-      debugSpheres.push(sphere);
+  function addDebugHelpers() {
+    removeDebugHelpers();
+    debugHelpers = createDebugSpheres(scene, triggers);
+  }
+
+  function removeDebugHelpers() {
+    for (const helper of debugHelpers) {
+      if (helper.parent) helper.parent.remove(helper);
     }
+    debugHelpers = [];
   }
 
-  function clearDebugSpheres() {
-    debugSpheres.forEach((sphere) => {
-      if (sphere.parent) sphere.parent.remove(sphere);
-    });
-    debugSpheres = [];
-  }
-
-  function loadTriggers() {
-    return loadTriggerTextMap().then((textMap) => {
-      return new Promise((resolve, reject) => {
-        const loader = new GLTFLoader().setPath("./models/");
-        loader.load(
-          "triggers.glb",
-          (gltf) => {
-            scene.add(gltf.scene);
-            triggers = extractTriggersFromScene(gltf.scene, textMap, scene);
-            loaded = true;
-            if (showDebugSpheres && triggers.length > 0) {
-              createDebugSpheres();
-              console.log(
-                "Trigger system loaded:",
-                triggers.map((trigger) => ({
-                  id: trigger.id,
-                  name: trigger.name,
-                  radius: trigger.radius,
-                  text: trigger.text ? "[mapped]" : "[missing]",
-                }))
-              );
-            }
-            if (triggers.length === 0) {
-              console.warn("No trigger nodes were found in triggers.glb.");
-            }
-            resolve(triggers);
-          },
-          undefined,
-          (error) => {
-            console.error("Failed to load triggers.glb", error);
-            reject(error);
-          }
-        );
-      });
-    });
-  }
-
-  function setDebug(value) {
-    showDebugSpheres = Boolean(value);
+  function setDebug(enabled) {
+    debug = enabled;
     if (!loaded) return;
-    if (showDebugSpheres) {
-      createDebugSpheres();
-    } else {
-      clearDebugSpheres();
-    }
+    if (debug) addDebugHelpers();
+    else removeDebugHelpers();
+  }
+
+  async function loadTriggers() {
+    const textMap = await loadTriggerTextMap(options.textUrl);
+    return new Promise((resolve, reject) => {
+      const loader = new GLTFLoader().setPath(TRIGGER_MODEL_BASE_PATH);
+      loader.load(
+        "triggers.glb",
+        (gltf) => {
+          scene.add(gltf.scene);
+          triggers = createTriggersFromScene(gltf.scene, textMap);
+          loaded = true;
+          if (debug && triggers.length > 0) addDebugHelpers();
+          if (triggers.length === 0) {
+            console.warn("No trigger nodes were found in triggers.glb.");
+          } else {
+            console.log(
+              "Trigger system loaded:",
+              triggers.map((trigger) => ({
+                id: trigger.id,
+                name: trigger.name,
+                radius: trigger.radius,
+                text: trigger.text ? "[mapped]" : "[missing]",
+              }))
+            );
+          }
+          resolve(triggers);
+        },
+        undefined,
+        reject
+      );
+    });
   }
 
   function checkTriggers() {
-    if (!loaded || triggers.length === 0) return;
-    if (!playerCollider) return;
-
+    if (!loaded || triggers.length === 0 || !playerCollider) return;
     for (const trigger of triggers) {
-      const insideNow = sphereIntersectsCapsule(trigger.center, trigger.radius, playerCollider);
+      const inside = isPlayerInsideTrigger(trigger, playerCollider);
 
-      if (insideNow) {
-        if (!trigger.inside && !trigger.triggered) {
-          trigger.triggered = true;
-          if (trigger.object) {
-            trigger.object.visible = false;
-          }
-          if (typeof onTrigger === "function") {
-            onTrigger(trigger);
+      if (inside) {
+        if (!trigger.inside) {
+          trigger.inside = true;
+          if (!trigger.triggered) {
+            trigger.triggered = true;
+            
+            // Hide the trigger object
+            // console.log(trigger);
+            if ( trigger.object ) {
+                trigger.object.visible = false;
+            }
+
+            if (typeof onTrigger === "function") {
+                onTrigger(trigger);
+                restoreHealth();
+            }
           }
         }
-        trigger.inside = true;
       } else {
-        trigger.inside = false;
-      }
-    }
-  }
-
-  function updateTriggerObjects(deltaTime, elapsedTime) {
-    if (!loaded || triggers.length === 0 || !(deltaTime > 0)) return;
-    const rotationDelta = TRIGGER_ROTATION_SPEED * deltaTime;
-    const transfromDelta = Math.sin(elapsedTime) * 0.005;
-
-    for (const trigger of triggers) {
-      if (trigger.object && trigger.object.visible) {
-        trigger.object.rotateY(rotationDelta);
-        trigger.object.translateY(transfromDelta);
+        // player is outside the trigger
+        if (trigger.inside) {
+          // player just exited
+          trigger.inside = false;
+          if (typeof options.onTriggerExit === "function") {
+            try {
+              options.onTriggerExit(trigger);
+            } catch (err) {
+              console.error("onTriggerExit handler threw:", err);
+            }
+          }
+        }
       }
     }
   }
 
   function resetTriggers() {
-    triggers = triggers.map((trigger) => ({
-      ...trigger,
-      triggered: false,
-      inside: false,
-    }));
-    triggers.forEach((trigger) => {
-      if (trigger.object) {
+    for (const trigger of triggers) {
+        trigger.triggered = false;
+        trigger.inside = false;
         trigger.object.visible = true;
       }
-    });
   }
 
   return {
@@ -260,7 +258,6 @@ function createTriggerSystem({ scene, playerCollider, onTrigger, debug = false }
     checkTriggers,
     resetTriggers,
     setDebug,
-    updateTriggerObjects,
   };
 }
 

@@ -17,21 +17,18 @@ function createComposer(renderer, scene, camera) {
 
   const bloomPass = new UnrealBloomPass(
     new Vector2(window.innerWidth, window.innerHeight),
-    2.0,
-    0.5,
+    1.2,
+    0.1,
     0.5
   );
-  bloomPass.threshold = 2.0;
-  bloomPass.strength = 0.5;
+  bloomPass.threshold = 1.2;
+  bloomPass.strength = 0.1;
   bloomPass.radius = 0.5;
 
   composer.addPass(bloomPass);
 
   const radialBlurPass = new ShaderPass(RadialEdgeBlurShader);
   composer.addPass(radialBlurPass);
-
-  const colorOverlayPass = new ShaderPass(ColorOverlayShader);
-  composer.addPass(colorOverlayPass);
 
   const fxaaPass = new ShaderPass(FXAAShader);
   fxaaPass.material.uniforms.resolution.value.set(
@@ -43,6 +40,9 @@ function createComposer(renderer, scene, camera) {
   const toneMapPass = new ShaderPass(ACESFilmicToneMappingShader);
   toneMapPass.material.uniforms.exposure.value = 1.0;
   composer.addPass(toneMapPass);
+
+  const colorOverlayPass = new ShaderPass(ColorOverlayShader);
+  composer.addPass(colorOverlayPass);
 
   return {
     composer,

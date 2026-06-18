@@ -4,7 +4,7 @@ function createHealthSystem () {
     let onDeath = () => {};
     let onHealthChange = () => {};
 
-    const damagePower = 1.25;
+    const damagePower = 1.2;
 
     function setOnDeath(callback) {
         if (typeof callback === "function") {
@@ -34,18 +34,20 @@ function createHealthSystem () {
         }
     }
 
-    function restoreHealth ( full = false, amount = 0 ) {
-        if ( full ) { 
+    function restoreHealth( amount = "full" ) {
+        if (amount === "full") {
             health = MAX_HEALTH;
-            console.log("Health restored to max: " + health);
-            onHealthChange(health);
+            console.log("Health restored to max: " + MAX_HEALTH);
         }
-        else {
-            health += amount;
+
+        else if (typeof amount === "number" && amount > 0) {
+            health = Math.min(MAX_HEALTH, health + amount);
             console.log("Health restored: " + health);
-            onHealthChange(health);
         }
+    
+        onHealthChange(health);
     }
+
     return {
         takeDamage,
         restoreHealth,

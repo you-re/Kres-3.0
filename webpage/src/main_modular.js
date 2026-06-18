@@ -135,7 +135,7 @@ const { applyControls, setInputEnabled: setInputEnabledFromControls } = controls
 setInputEnabled = setInputEnabledFromControls || setInputEnabled;
 
 // Load World
-loadWorld(scene, worldOctree);
+await loadWorld(scene, worldOctree);
 
 // Add Background Sound Effects
 // addBgMusic();
@@ -143,7 +143,7 @@ loadWorld(scene, worldOctree);
 // Animation Loop
 function animate() {
   const deltaTime = Math.min(0.05, clock.getDelta()) / STEPS_PER_FRAME;
-
+  
   for (let i = 0; i < STEPS_PER_FRAME; i++) {
     applyControls(deltaTime, playerCollider.onFloor, camera);
     updatePlayer(deltaTime, worldOctree, camera);

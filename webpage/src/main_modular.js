@@ -66,13 +66,22 @@ const {
   restoreHealth,
   getHealth,
   setOnDeath,
-  setOnHealthChange
+  setOnHealthChange,
+  setOnDamage
 } = createHealthSystem ();
 
 let setInputEnabled = () => {};
 // UI is visual-only; control input toggling is handled elsewhere when needed
 const ui = createUI();
 ui.updateHealth(getHealth());
+
+// DAMAGE FLASH
+const DAMAGE_FLASH_TIME = 0.25;
+let damageOverlayTimer = 0;
+
+setOnDamage((amount) => {
+  damageOverlayTimer = DAMAGE_FLASH_TIME;
+});
 
 // Initialize Physics & Controls
 const {
@@ -179,6 +188,14 @@ function animate() {
   // Post effects while falling
   setRadialBlurStrength(verticalSpeedEffect);
   setColorOverlayStrength(Math.pow(verticalSpeedEffect, 2), new THREE.Color(0x000000));
+
+  if (damageOverlayTimer > 0) {
+    const t = damageOverlayTimer / DAMAGE_FLASH_TIME;
+  
+    setColorOverlayStrength(Math.pow(t, 2), new THREE.Color(0xff3333));
+  
+    damageOverlayTimer -= deltaTime * STEPS_PER_FRAME;
+  }
 
   if ( healthOverlayTimer > 0) {
     setColorOverlayStrength ( Math.pow(healthOverlayTimer / HEALTH_TIMER, 2.0), new THREE.Color(0x3399ff));

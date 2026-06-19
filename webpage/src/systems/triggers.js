@@ -178,7 +178,7 @@ function createTriggerSystem(scene, playerCollider, onTrigger, restoreHealth, op
     return new Promise((resolve, reject) => {
       const loader = new GLTFLoader().setPath(TRIGGER_MODEL_BASE_PATH);
       loader.load(
-        "triggers.glb",
+        "triggers.gltf",
         (gltf) => {
           scene.add(gltf.scene);
           triggers = createTriggersFromScene(gltf.scene, textMap);
@@ -222,7 +222,7 @@ function createTriggerSystem(scene, playerCollider, onTrigger, restoreHealth, op
                 trigger.object.visible = false;
             }
 
-            if (typeof onTrigger === "function") {
+            if (typeof onTrigger === "function" && !(trigger.name.includes("light"))) {
                 onTrigger(trigger);
                 restoreHealth();
             }

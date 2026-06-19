@@ -4,7 +4,7 @@ import * as THREE from "three";
 import { createScene } from "./components/scene";
 import { createCamera } from "./components/camera";
 import { createLights } from "./components/lights";
-import { loadWorld } from "./components/world";
+import { loadWorld, worldAnimationMixers } from "./components/world";
 // import { addBgMusic } from "./components/music";
 
 // Systems
@@ -149,12 +149,34 @@ function animate() {
     updatePlayer(deltaTime, worldOctree, camera);
   }
 
+  // Update animations
+  const frameDelta = deltaTime * STEPS_PER_FRAME;
+  worldAnimationMixers.forEach((mixer) => {
+    mixer.update(frameDelta);
+  });
+
   if (playerCollider.onFloor) {
     triggerSystem.checkTriggers();
   }
 
   let verticalSpeedEffect = THREE.MathUtils.clamp((Math.max(0, (-playerVelocity.y)) / 20) - 1, 0, 10.0);
 
+  // Sun color based on player position
+  const colorA = new THREE.Color(0xffffff);
+  const colorB = new THREE.Color(0x000000);
+  const sunColor = new THREE.Color();
+
+  const t = THREE.MathUtils.clamp((50 + camera.position.y) / 50, 0, 1);
+
+  sunColor.copy(colorA).lerp(colorB, t);
+
+  if (t > 0) {
+    // console.log("setting color to: " + sunColor + " t: " + t);
+    setSunColor(sunColor);
+    setFogDensity(t * 0.1 + 0.05);
+  };
+
+  // Post effects while falling
   setRadialBlurStrength(verticalSpeedEffect);
   setColorOverlayStrength(Math.pow(verticalSpeedEffect, 2), new THREE.Color(0x000000));
 

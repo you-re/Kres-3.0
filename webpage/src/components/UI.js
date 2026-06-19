@@ -66,10 +66,10 @@ function createUI(options = {}) {
         </div>
         <div id="health-bar-art"></div>
       </div>
-      <!--
+      
       <div id="health-text">Health: 100 / 100</div>
     </div>
-    -->
+    
     <div id="trigger-message" class="hidden" role="dialog" aria-live="polite">
       <p id="trigger-message-text"></p>
     </div>
@@ -84,7 +84,6 @@ function createUI(options = {}) {
 
   const colorLow = "#671f1a";
   const colorHigh = "#ff0000";
-  // trigger messages are purely visual; input/pointerlock handled by game systems
 
   function updateHealth(value) {
     const normalized = Math.max(0, Math.min(100, Math.round(value)));

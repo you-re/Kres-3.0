@@ -18,7 +18,7 @@
 						1,
 						1
 					],
-					"intensity":2717.5706532941126,
+					"intensity":1630.5423919764678,
 					"type":"point",
 					"name":"Point.001"
 				}
@@ -73,24 +73,27 @@
 			},
 			"name":"Point.001",
 			"rotation":[
-				0.7071069478988647,
+				-0.7071068286895752,
 				0,
 				0,
-				0.7071065902709961
+				0.7071068286895752
 			],
 			"translation":[
-				-3.0160396099090576,
-				45.30262756347656,
-				-6.196352958679199
+				-11.118022918701172,
+				27.15828514099121,
+				-12.70249080657959
 			]
 		}
 	],
 	"materials":[
 		{
 			"name":"Ground",
+			"normalTexture":{
+				"index":0
+			},
 			"pbrMetallicRoughness":{
 				"baseColorTexture":{
-					"index":0
+					"index":1
 				},
 				"metallicFactor":0
 			}
@@ -100,7 +103,7 @@
 			"name":"alert",
 			"pbrMetallicRoughness":{
 				"baseColorTexture":{
-					"index":1
+					"index":2
 				},
 				"metallicFactor":0,
 				"roughnessFactor":0.5
@@ -109,9 +112,12 @@
 		{
 			"doubleSided":true,
 			"name":"well",
+			"normalTexture":{
+				"index":3
+			},
 			"pbrMetallicRoughness":{
 				"baseColorTexture":{
-					"index":2
+					"index":4
 				},
 				"metallicFactor":0
 			}
@@ -173,18 +179,36 @@
 		{
 			"sampler":0,
 			"source":2
+		},
+		{
+			"sampler":0,
+			"source":3
+		},
+		{
+			"sampler":0,
+			"source":4
 		}
 	],
 	"images":[
 		{
 			"mimeType":"image/jpeg",
-			"name":"Cracks_04",
-			"uri":"tex/Cracks_04.jpg"
+			"name":"soil-normal",
+			"uri":"tex/soil-normal.jpg"
+		},
+		{
+			"mimeType":"image/jpeg",
+			"name":"soil",
+			"uri":"tex/soil.jpg"
 		},
 		{
 			"mimeType":"image/png",
 			"name":"alert",
 			"uri":"tex/alert.png"
+		},
+		{
+			"mimeType":"image/jpeg",
+			"name":"cobblestone-normal",
+			"uri":"tex/cobblestone-normal.jpg"
 		},
 		{
 			"mimeType":"image/jpeg",
@@ -196,15 +220,15 @@
 		{
 			"bufferView":0,
 			"componentType":5126,
-			"count":1263,
+			"count":1316,
 			"max":[
 				39.85236358642578,
-				24.361042022705078,
+				24.032772064208984,
 				39.85236358642578
 			],
 			"min":[
 				-39.85236358642578,
-				0,
+				-0.6477484107017517,
 				-39.85236358642578
 			],
 			"type":"VEC3"
@@ -212,19 +236,19 @@
 		{
 			"bufferView":1,
 			"componentType":5126,
-			"count":1263,
+			"count":1316,
 			"type":"VEC3"
 		},
 		{
 			"bufferView":2,
 			"componentType":5126,
-			"count":1263,
+			"count":1316,
 			"type":"VEC2"
 		},
 		{
 			"bufferView":3,
 			"componentType":5123,
-			"count":6288,
+			"count":6480,
 			"type":"SCALAR"
 		},
 		{
@@ -299,74 +323,74 @@
 	"bufferViews":[
 		{
 			"buffer":0,
-			"byteLength":15156,
+			"byteLength":15792,
 			"byteOffset":0,
 			"target":34962
 		},
 		{
 			"buffer":0,
-			"byteLength":15156,
-			"byteOffset":15156,
+			"byteLength":15792,
+			"byteOffset":15792,
 			"target":34962
 		},
 		{
 			"buffer":0,
-			"byteLength":10104,
-			"byteOffset":30312,
+			"byteLength":10528,
+			"byteOffset":31584,
 			"target":34962
 		},
 		{
 			"buffer":0,
-			"byteLength":12576,
-			"byteOffset":40416,
+			"byteLength":12960,
+			"byteOffset":42112,
 			"target":34963
 		},
 		{
 			"buffer":0,
 			"byteLength":3216,
-			"byteOffset":52992,
+			"byteOffset":55072,
 			"target":34962
 		},
 		{
 			"buffer":0,
 			"byteLength":3216,
-			"byteOffset":56208,
+			"byteOffset":58288,
 			"target":34962
 		},
 		{
 			"buffer":0,
 			"byteLength":2144,
-			"byteOffset":59424,
+			"byteOffset":61504,
 			"target":34962
 		},
 		{
 			"buffer":0,
 			"byteLength":912,
-			"byteOffset":61568,
+			"byteOffset":63648,
 			"target":34963
 		},
 		{
 			"buffer":0,
 			"byteLength":83028,
-			"byteOffset":62480,
+			"byteOffset":64560,
 			"target":34962
 		},
 		{
 			"buffer":0,
 			"byteLength":83028,
-			"byteOffset":145508,
+			"byteOffset":147588,
 			"target":34962
 		},
 		{
 			"buffer":0,
 			"byteLength":55352,
-			"byteOffset":228536,
+			"byteOffset":230616,
 			"target":34962
 		},
 		{
 			"buffer":0,
 			"byteLength":29478,
-			"byteOffset":283888,
+			"byteOffset":285968,
 			"target":34963
 		}
 	],
@@ -378,7 +402,7 @@
 	],
 	"buffers":[
 		{
-			"byteLength":313368,
+			"byteLength":315448,
 			"uri":"ground.bin"
 		}
 	]

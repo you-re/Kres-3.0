@@ -48,11 +48,13 @@ function loadWorld(scene, worldOctree) {
     }
   });
 
-  loadModel(loader, "collision-world-01.glb", scene, worldOctree);
+  loadModel(loader, "collision-world-01.gltf", scene, worldOctree);
   loadModel(loader, "collision-world-02.gltf", scene, worldOctree);
-  loadModel(loader, "collision-world-03.glb", scene, worldOctree);
-  loadModel(loader, "collision-world-04.glb", scene, worldOctree);
-  loadModel(loader, "collision-world-05.glb", scene, worldOctree);
+  loadModel(loader, "collision-world-03.gltf", scene, worldOctree);
+  loadModel(loader, "collision-world-04.gltf", scene, worldOctree);
+  loadModel(loader, "collision-world-05.gltf", scene, worldOctree);
+
+  loadModel(loader, "bottom.gltf", scene, worldOctree);
 }
 
 export { loadWorld, worldAnimationMixers };

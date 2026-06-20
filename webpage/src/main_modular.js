@@ -144,18 +144,33 @@ const { applyControls, setInputEnabled: setInputEnabledFromControls } = controls
 setInputEnabled = setInputEnabledFromControls || setInputEnabled;
 
 // Load World
-loadWorld(scene, worldOctree);
+let loadPercent = 0;
+let worldLoaded = false;
+
+loadWorld(
+  scene,
+  worldOctree,
+  (percent) => {
+    loadPercent = percent;
+  },
+  () => {
+    worldLoaded = true;
+  }
+);
 
 // Add Background Sound Effects
 // addBgMusic();
 
 // Animation Loop
 function animate() {
+  console.log("Loading: " + loadPercent + "%");
   const deltaTime = Math.min(0.05, clock.getDelta()) / STEPS_PER_FRAME;
-  
-  for (let i = 0; i < STEPS_PER_FRAME; i++) {
-    applyControls(deltaTime, playerCollider.onFloor, camera);
-    updatePlayer(deltaTime, worldOctree, camera);
+
+  if (loadPercent >= 100) {
+    for (let i = 0; i < STEPS_PER_FRAME; i++) {
+      applyControls(deltaTime, playerCollider.onFloor, camera);
+      updatePlayer(deltaTime, worldOctree, camera);
+    }
   }
 
   // Update animations
@@ -205,6 +220,14 @@ function animate() {
   if ( respawnOverlayTimer > 0 ) {
     setColorOverlayStrength ( Math.pow(respawnOverlayTimer / (RESPAWN_TIMER), 0.5), new THREE.Color(0xffffff));
     respawnOverlayTimer -= (deltaTime * STEPS_PER_FRAME ); // * STEPS_PER_FRAME to restore real time
+  }
+
+  if (loadPercent < 100) {
+    ui.clearTriggerMessage();
+
+    setColorOverlayStrength ( 1.0, new THREE.Color(0x000000));
+
+    ui.showTriggerMessage("Loading: " + loadPercent + "%");
   }
 
   composer.render();

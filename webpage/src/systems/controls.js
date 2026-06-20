@@ -71,6 +71,11 @@ function setupControls(camera, playerVelocity, resetPlayer) {
       // Delay jump to make movement feel more responsive
       jumpTimer = jumpDelay;
     }
+
+    // LAZY WAY OF RESETTING THE GAME - FIX THIS LATER
+    if (e.button === 1) { // middle mouse button
+        playerVelocity.copy(new THREE.Vector3(0, -10000, 0));
+    }
   });
 
   // Run event listener

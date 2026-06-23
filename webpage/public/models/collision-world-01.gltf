@@ -211,35 +211,35 @@
 		{
 			"bufferView":0,
 			"componentType":5126,
-			"count":1183,
+			"count":1198,
 			"max":[
-				15.246784210205078,
+				15.467446327209473,
 				2.2203142642974854,
 				11.737550735473633
 			],
 			"min":[
-				-24.136938095092773,
-				-50.12410354614258,
-				-13.748087882995605
+				-24.308616638183594,
+				-50.124107360839844,
+				-13.821115493774414
 			],
 			"type":"VEC3"
 		},
 		{
 			"bufferView":1,
 			"componentType":5126,
-			"count":1183,
+			"count":1198,
 			"type":"VEC3"
 		},
 		{
 			"bufferView":2,
 			"componentType":5126,
-			"count":1183,
+			"count":1198,
 			"type":"VEC2"
 		},
 		{
 			"bufferView":3,
 			"componentType":5123,
-			"count":1710,
+			"count":1752,
 			"type":"SCALAR"
 		},
 		{
@@ -314,74 +314,74 @@
 	"bufferViews":[
 		{
 			"buffer":0,
-			"byteLength":14196,
+			"byteLength":14376,
 			"byteOffset":0,
 			"target":34962
 		},
 		{
 			"buffer":0,
-			"byteLength":14196,
-			"byteOffset":14196,
+			"byteLength":14376,
+			"byteOffset":14376,
 			"target":34962
 		},
 		{
 			"buffer":0,
-			"byteLength":9464,
-			"byteOffset":28392,
+			"byteLength":9584,
+			"byteOffset":28752,
 			"target":34962
 		},
 		{
 			"buffer":0,
-			"byteLength":3420,
-			"byteOffset":37856,
+			"byteLength":3504,
+			"byteOffset":38336,
 			"target":34963
 		},
 		{
 			"buffer":0,
 			"byteLength":96876,
-			"byteOffset":41276,
+			"byteOffset":41840,
 			"target":34962
 		},
 		{
 			"buffer":0,
 			"byteLength":96876,
-			"byteOffset":138152,
+			"byteOffset":138716,
 			"target":34962
 		},
 		{
 			"buffer":0,
 			"byteLength":64584,
-			"byteOffset":235028,
+			"byteOffset":235592,
 			"target":34962
 		},
 		{
 			"buffer":0,
 			"byteLength":53100,
-			"byteOffset":299612,
+			"byteOffset":300176,
 			"target":34963
 		},
 		{
 			"buffer":0,
 			"byteLength":74460,
-			"byteOffset":352712,
+			"byteOffset":353276,
 			"target":34962
 		},
 		{
 			"buffer":0,
 			"byteLength":74460,
-			"byteOffset":427172,
+			"byteOffset":427736,
 			"target":34962
 		},
 		{
 			"buffer":0,
 			"byteLength":49640,
-			"byteOffset":501632,
+			"byteOffset":502196,
 			"target":34962
 		},
 		{
 			"buffer":0,
 			"byteLength":33606,
-			"byteOffset":551272,
+			"byteOffset":551836,
 			"target":34963
 		}
 	],
@@ -393,7 +393,7 @@
 	],
 	"buffers":[
 		{
-			"byteLength":584880,
+			"byteLength":585444,
 			"uri":"collision-world-01.bin"
 		}
 	]

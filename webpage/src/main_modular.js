@@ -163,7 +163,7 @@ loadWorld(
 
 // Animation Loop
 function animate() {
-  console.log("Loading: " + loadPercent + "%");
+  // console.log("Loading: " + loadPercent + "%");
   const deltaTime = Math.min(0.05, clock.getDelta()) / STEPS_PER_FRAME;
 
   if (loadPercent >= 100) {

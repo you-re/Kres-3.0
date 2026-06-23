@@ -72,6 +72,16 @@
 					"intensity":108.70282613176452,
 					"type":"point",
 					"name":"Point.012"
+				},
+				{
+					"color":[
+						1,
+						0.013393405824899673,
+						0.02041935734450817
+					],
+					"intensity":108.70282613176452,
+					"type":"point",
+					"name":"Point.011"
 				}
 			]
 		}
@@ -93,7 +103,9 @@
 				9,
 				10,
 				11,
-				12
+				12,
+				13,
+				14
 			]
 		}
 	],
@@ -273,6 +285,34 @@
 				2.5899031162261963,
 				-452.4226379394531,
 				2.2260818481445312
+			]
+		},
+		{
+			"mesh":7,
+			"name":"trigger_06",
+			"translation":[
+				0.0716027021408081,
+				-237.15591430664062,
+				-4.442558288574219
+			]
+		},
+		{
+			"extensions":{
+				"KHR_lights_punctual":{
+					"light":6
+				}
+			},
+			"name":"trigger_06_light",
+			"rotation":[
+				0.7071069478988647,
+				0,
+				0,
+				0.7071065902709961
+			],
+			"translation":[
+				0.07160294055938721,
+				-237.15591430664062,
+				-4.442558288574219
 			]
 		}
 	],
@@ -468,6 +508,29 @@
 						"POSITION":41,
 						"NORMAL":42,
 						"TEXCOORD_0":43
+					},
+					"indices":7,
+					"material":1
+				}
+			]
+		},
+		{
+			"name":"Icosphere.006",
+			"primitives":[
+				{
+					"attributes":{
+						"POSITION":44,
+						"NORMAL":45,
+						"TEXCOORD_0":46
+					},
+					"indices":3,
+					"material":0
+				},
+				{
+					"attributes":{
+						"POSITION":47,
+						"NORMAL":48,
+						"TEXCOORD_0":49
 					},
 					"indices":7,
 					"material":1
@@ -892,6 +955,62 @@
 			"componentType":5126,
 			"count":45,
 			"type":"VEC2"
+		},
+		{
+			"bufferView":44,
+			"componentType":5126,
+			"count":445,
+			"max":[
+				0.3684489130973816,
+				0.08176770806312561,
+				0.36648932099342346
+			],
+			"min":[
+				-0.34454140067100525,
+				-0.33723685145378113,
+				-0.36098721623420715
+			],
+			"type":"VEC3"
+		},
+		{
+			"bufferView":45,
+			"componentType":5126,
+			"count":445,
+			"type":"VEC3"
+		},
+		{
+			"bufferView":46,
+			"componentType":5126,
+			"count":445,
+			"type":"VEC2"
+		},
+		{
+			"bufferView":47,
+			"componentType":5126,
+			"count":45,
+			"max":[
+				0.20140114426612854,
+				0.33723685145378113,
+				0.19154192507266998
+			],
+			"min":[
+				-0.20140114426612854,
+				-0.1508173793554306,
+				-0.19154192507266998
+			],
+			"type":"VEC3"
+		},
+		{
+			"bufferView":48,
+			"componentType":5126,
+			"count":45,
+			"type":"VEC3"
+		},
+		{
+			"bufferView":49,
+			"componentType":5126,
+			"count":45,
+			"type":"VEC2"
 		}
 	],
 	"bufferViews":[
@@ -1158,6 +1277,42 @@
 			"byteLength":360,
 			"byteOffset":110844,
 			"target":34962
+		},
+		{
+			"buffer":0,
+			"byteLength":5340,
+			"byteOffset":111204,
+			"target":34962
+		},
+		{
+			"buffer":0,
+			"byteLength":5340,
+			"byteOffset":116544,
+			"target":34962
+		},
+		{
+			"buffer":0,
+			"byteLength":3560,
+			"byteOffset":121884,
+			"target":34962
+		},
+		{
+			"buffer":0,
+			"byteLength":540,
+			"byteOffset":125444,
+			"target":34962
+		},
+		{
+			"buffer":0,
+			"byteLength":540,
+			"byteOffset":125984,
+			"target":34962
+		},
+		{
+			"buffer":0,
+			"byteLength":360,
+			"byteOffset":126524,
+			"target":34962
 		}
 	],
 	"samplers":[
@@ -1168,7 +1323,7 @@
 	],
 	"buffers":[
 		{
-			"byteLength":111204,
+			"byteLength":126884,
 			"uri":"triggers.bin"
 		}
 	]

@@ -5,7 +5,7 @@ function createHealthSystem () {
     let onHealthChange = () => {};
     let onDamage = () => {};
 
-    const damagePower = 1.2;
+    const damagePower = 1.1;
 
     function setOnDeath(callback) {
         if (typeof callback === "function") {

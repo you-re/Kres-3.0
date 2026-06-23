@@ -4,7 +4,7 @@
     },
 
     "trigger_01": {
-        "text": "Banished from your people's planet onto an unknown and strange world, you wake up. The air is thick and full of smog"
+        "text": "Banished from your people's planet onto an unknown and strange world, you wake up. The air is thick and full of smog. You notice a well nearby."
     },
 
     "trigger_02": {
@@ -12,18 +12,20 @@
     },
 
     "trigger_03": {
-        "text": "Your family and friends are just a distant memory now. There isn't a way back."
+        "text": "There is no way back. Your family and friends are just a distant memory now."
     },
 
     "trigger_04": {
-        "text": "The world you once knew starts to fade. People forgot your name. Forgot the names of places you knew and cherished. Forget your species ever existed in the first place."
+        "text": "The deeper you go, the more familiar it becomes. Some deep parts of your mind seem to recognize these patterns..."
     },
-    
     "trigger_05": {
-        "text": "Nek ekstra tekst."
+        "text": "Symbols from your childhood. This wasn’t just any civilization. You strangely feel at home here."
+    },
+    "trigger_06": {
+        "text": "The world you once knew starts to fade. People forget your name. Forget the names of places you knew and cherished. This doesn't matter to you anymore now."
     },
     
     "trigger_end": {
-        "text": "Nekej o tem kako se približaš robu in vidiš nova tla..."
+        "text": "You reach what seems to be the ground. In an instant, everything snaps back."
     }
 }

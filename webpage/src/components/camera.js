@@ -3,7 +3,7 @@ import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 
 function createCamera(scene) {
   const camera = new PerspectiveCamera(
-    30,
+    90,
     window.innerWidth / window.innerHeight,
     0.1,
     1000

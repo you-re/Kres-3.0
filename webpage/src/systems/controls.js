@@ -15,7 +15,7 @@ function setupControls(camera, playerVelocity, resetPlayer) {
 
   let speed = 0;
 
-  // let disabledMovement = false;
+  let disabledMovement = false;
   let inputEnabled = true;
 
   function setInputEnabled(value) {
@@ -37,7 +37,7 @@ function setupControls(camera, playerVelocity, resetPlayer) {
         // LAZY WAY OF RESETTING THE GAME - FIX THIS LATER
         playerVelocity.copy(new THREE.Vector3(0, -10000, 0));
       }
-      /*
+
       if (event.code === "KeyM") {
         disabledMovement = !disabledMovement;
         if (disabledMovement) {
@@ -47,27 +47,24 @@ function setupControls(camera, playerVelocity, resetPlayer) {
         }
         console.log("Movement toggled:", disabledMovement);
       }
-      */
     }
   );
-  
-  /*
+
   document.body.addEventListener("click", () => {
     if (!disabledMovement && inputEnabled) {
       document.body.requestPointerLock();
     }
   });
-  */
 
   document.body.addEventListener("mousemove", (event) => {
-    // if ((document.pointerLockElement === document.body) && !disabledMovement) {
+    if ((document.pointerLockElement === document.body) && !disabledMovement) {
       // X and Y are exchanged -> camera's X axis is up-down
       camera.rotation.y -= event.movementX / 500;
       // Handle vertical camera rotation -> Limits angle
       let newAngleX = camera.rotation.x - event.movementY / 500;
       newAngleX = Math.min(Math.PI / 2, Math.max(-Math.PI / 2, newAngleX));
       camera.rotation.x = newAngleX;
-    // }
+    }
   });
 
   // Mouse controls event listener
@@ -122,7 +119,7 @@ function setupControls(camera, playerVelocity, resetPlayer) {
       side.setFromMatrixColumn(camera.matrixWorld, 0).normalize();
     }
 
-    // if (!disabledMovement) {
+    if (!disabledMovement) {
       // Jump
       if (jump && onFloor && jumpTimer > 0) {
         playerVelocity.y = 10;
@@ -139,7 +136,7 @@ function setupControls(camera, playerVelocity, resetPlayer) {
         newVelocity.y = playerVelocity.y;
         playerVelocity.copy(newVelocity);
       }
-    // };
+    };
 
     if (onFloor)
       {

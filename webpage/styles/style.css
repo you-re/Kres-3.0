@@ -139,6 +139,7 @@ canvas {
   cursor: pointer;
   user-select: none;
   /* backdrop-filter: blur(12px); */
+  cursor: none;
 }
 
 #trigger-message.hidden {

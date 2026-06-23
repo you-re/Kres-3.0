@@ -50,12 +50,14 @@ function setupControls(camera, playerVelocity, resetPlayer) {
       */
     }
   );
-
+  
+  /*
   document.body.addEventListener("click", () => {
-    if (/*!disabledMovement && */ inputEnabled) {
+    if (!disabledMovement && inputEnabled) {
       document.body.requestPointerLock();
     }
   });
+  */
 
   document.body.addEventListener("mousemove", (event) => {
     // if ((document.pointerLockElement === document.body) && !disabledMovement) {

@@ -18,10 +18,12 @@
     "trigger_04": {
         "text": "The world you once knew starts to fade. People forgot your name. Forgot the names of places you knew and cherished. Forget your species ever existed in the first place."
     },
+    
     "trigger_05": {
-        "text": "The world you once knew starts to fade. People forgot your name. Forgot the names of places you knew and cherished. Forget your species ever existed in the first place."
+        "text": "Nek ekstra tekst."
     },
-    "trigger_06": {
-        "text": "The world you once knew starts to fade. People forgot your name. Forgot the names of places you knew and cherished. Forget your species ever existed in the first place."
+    
+    "trigger_end": {
+        "text": "Nekej o tem kako se približaš robu in vidiš nova tla..."
     }
 }

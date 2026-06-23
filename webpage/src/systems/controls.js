@@ -32,6 +32,11 @@ function setupControls(camera, playerVelocity, resetPlayer) {
       if (event.code === "KeyR") {
         resetPlayer();
       }
+      
+      if (event.code === "KeyU") {
+        // LAZY WAY OF RESETTING THE GAME - FIX THIS LATER
+        playerVelocity.copy(new THREE.Vector3(0, -10000, 0));
+      }
 
       if (event.code === "KeyM") {
         disabledMovement = !disabledMovement;

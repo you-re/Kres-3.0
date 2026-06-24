@@ -1,6 +1,6 @@
 {
     "trigger_start": {
-        "text": "Move mouse to look \nLeft click to jump \nLeft click + hold to float \nMiddle click to respawn"
+        "text": "↹ Move mouse to look \n⬅ Left click to jump \n▲ Hold while jumping to move \n⬆ Middle click to respawn \nѧ Find bonfires to restore health"
     },
 
     "trigger_01": {

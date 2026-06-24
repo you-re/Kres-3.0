@@ -4,7 +4,11 @@
 		"version":"2.0"
 	},
 	"extensionsUsed":[
+		"EXT_texture_webp",
 		"KHR_materials_emissive_strength"
+	],
+	"extensionsRequired":[
+		"EXT_texture_webp"
 	],
 	"scene":0,
 	"scenes":[
@@ -131,15 +135,19 @@
 	],
 	"textures":[
 		{
-			"sampler":0,
-			"source":0
+			"extensions":{
+				"EXT_texture_webp":{
+					"source":0
+				}
+			},
+			"sampler":0
 		}
 	],
 	"images":[
 		{
-			"mimeType":"image/jpeg",
+			"mimeType":"image/webp",
 			"name":"mouth_emit",
-			"uri":"tex/mouth_emit.jpg"
+			"uri":"tex/mouth_emit.webp"
 		}
 	],
 	"accessors":[

@@ -183,22 +183,26 @@ function animate() {
     triggerSystem.checkTriggers();
   }
 
-  let verticalSpeedEffect = THREE.MathUtils.clamp((Math.max(0, (-playerVelocity.y)) / 20) - 1, 0, 10.0);
+  const verticalSpeedEffect = THREE.MathUtils.clamp((Math.max(0, (-playerVelocity.y)) / 20) - 1, 0, 10.0);
 
   // Sun color based on player position
   const colorA = new THREE.Color(0xffffff);
   const colorB = new THREE.Color(0x000000);
   const sunColor = new THREE.Color();
+  const fogMin = 200;
 
-  const t = THREE.MathUtils.clamp((50 + camera.position.y) / 50, 0, 1);
+  const t = THREE.MathUtils.clamp((fogMin + camera.position.y) / fogMin, 0, 1);
 
   sunColor.copy(colorA).lerp(colorB, t);
 
   if (t > 0) {
     // console.log("setting color to: " + sunColor + " t: " + t);
     setSunColor(sunColor);
-    setFogDensity(t * 0.1 + 0.05);
+    setFogDensity(t * 0.18 + 0.02);
   };
+  // REMOVE
+  // setSunColor(colorA);
+  // setFogDensity(0.025);
 
   // Post effects while falling
   setRadialBlurStrength(verticalSpeedEffect);
